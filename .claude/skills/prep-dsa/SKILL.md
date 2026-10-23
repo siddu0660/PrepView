@@ -7,6 +7,7 @@ description: Data Structures & Algorithms (C++) practice for /prep: dsa, leetcod
 
 Invoked by `/prep` after routing. Follow `../prep/references/session-contract.md` (loop + exact memory-write procedure) and `../prep/references/difficulty.md`.
 `MEM` = `python3 ../prep/scripts/memory.py` · memory key = `dsa` · inputs from orchestrator: `mode, difficulty, n, timed, text, profile`.
+If invoked directly (no orchestrator), set it up yourself: `MEM init dsa --default-level 2`, `MEM profile dsa`, mode = `problem`, difficulty = profile `recommended_level`.
 
 ## 1. Scope
 **In:** Coding-interview algorithm problems solved in C++20: arrays, strings, hashing, trees, graphs, DP, greedy, heaps, intervals, bit tricks, number theory; complexity analysis; STL pitfalls.

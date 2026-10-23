@@ -22,6 +22,7 @@ MODE_WORDS = [("quiz", ["quiz", "mcq", "test me", "questions on"]),
               ("review", ["review", "revise", "revision", "recap"]),
               ("explain", ["explain", "clear", "teach", "understand", "what is", "how does"]),
               ("drill", ["drill", "speed run"]),
+              ("story", ["story", "stories", "star answer"]),
               ("design", ["design"]),
               ("problem", ["problem", "new question", "give me a"])]
 
@@ -73,10 +74,11 @@ def parse(raw):
 
 
 def score(node, text):
-    low = " " + re.sub(r"[^a-z0-9+#\- ]", " ", text.lower()) + " "
+    low = re.sub(r"[^a-z0-9+#\- ]", " ", text.lower())
     s = 0
     for trig in node.get("triggers", []):
-        if f" {trig.lower()} " in low:
+        # whole-phrase match, tolerant of simple plurals ("deadlocks", "graphs")
+        if re.search(rf"(?<![a-z0-9]){re.escape(trig.lower())}(?:e?s)?(?![a-z0-9])", low):
             s += 1 + len(trig.split())     # longer phrases are more specific
     return s
 
@@ -138,6 +140,10 @@ def route(raw):
     ranked = sorted(leaves, key=lambda n: -score(n, text))
     top = score(ranked[0], text) if ranked else 0
     second = score(ranked[1], text) if len(ranked) > 1 else 0
+    parents = sorted((n for n in nodes if n.get("children")), key=lambda n: -score(n, text))
+    if parents and score(parents[0], text) >= MIN_SCORE and score(parents[0], text) > top:
+        kids = [n for n in nodes if n["parent"] == parents[0]["memory_key"]]
+        return finish("ask", None, opts, text, kids, f"matched '{parents[0]['id']}' but not a sub-domain; which one?", nodes)
     if top >= MIN_SCORE and top - second >= MIN_MARGIN:
         return finish("ok", ranked[0], opts, text, ranked[:3], f"trigger score {top} vs {second}", nodes)
     return finish("ask", None, opts, text, ranked[:3], f"low confidence (top={top}, second={second})", nodes)

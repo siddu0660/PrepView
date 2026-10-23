@@ -1,6 +1,6 @@
 # ADR-001: PrepView — Orchestrated, Memory-Backed Skill Set for Job Prep
 
-**Status:** Accepted (decisions on language, roles, memory location resolved 2026-10-23)
+**Status:** Implemented (steps 1-8 built and eval-tested 2026-10-23); decisions on language, roles, memory location resolved
 **Date:** 2026-10-23
 **Deciders:** Repo owner
 
@@ -26,7 +26,7 @@ A **three-layer design**: Orchestrator → Domain skills (nestable) → Per-doma
 .claude/skills/
   prep/                         # ORCHESTRATOR (user-facing: /prep)
     SKILL.md                    # ≤120 lines: parse → route → delegate → persist
-    registry.yaml               # single source of truth for routing (flags, aliases, triggers)
+    registry.json               # single source of truth for routing (flags, aliases, triggers)
     references/
       routing.md                # tie-break + ambiguity rules
       difficulty.md             # shared 1–5 scale + adaptive rules
@@ -46,9 +46,9 @@ A **three-layer design**: Orchestrator → Domain skills (nestable) → Per-doma
     SKILL.md
     references/ taxonomy.md rubric.md
   prep-lld/  prep-hld/  prep-os/  prep-db/  prep-net/  prep-behavioral/
-  prep-quant/                   # DOMAIN (nested: has its own registry.yaml)
+  prep-quant/                   # DOMAIN (nested: has its own registry.json)
     SKILL.md
-    registry.yaml               # probability, mental-math, brainteasers, stochastic, markets
+    registry.json               # probability, mental-math, brainteasers, stochastic, markets
     prob/ SKILL.md              # sub-skill, same template, own memory
     mental-math/ SKILL.md
 ~/.claude/prep-memory/          # USER DATA — NOT in the repo (override with $PREP_MEMORY_DIR)
@@ -70,7 +70,7 @@ chat memory is not writable from skills, so it is not used.
 ```
 /prep [--<domain>[.<sub>]] [-d 1..5] [-n N] [--mode <task>] [free text]
   │
-  ├─ 1 PARSE      flags win. Aliases from registry.yaml (--sd → hld, --os, --prob → quant.prob).
+  ├─ 1 PARSE      flags win. Aliases from registry.json (--sd → hld, --os, --prob → quant.prob).
   ├─ 2 ROUTE      no flag → match free text against registry `triggers`.
   │                 score ≥ threshold, margin over #2 ≥ gap → proceed, state "Routing: dsa".
   │                 else → ONE question (top 3 candidates as options). Never guess silently.
@@ -81,21 +81,19 @@ chat memory is not writable from skills, so it is not used.
   └─ 6 CLOSE      domain skill writes memory (§4); orchestrator prints 3-line recap + next suggestion.
 ```
 
-Nested domains: orchestrator resolves `quant.prob` by walking `registry.yaml` files; a parent `registry.yaml` only
+Nested domains: orchestrator resolves `quant.prob` by walking `registry.json` files; a parent `registry.json` only
 lists its children. Depth is unbounded but each level only loads its own registry.
 
-`registry.yaml` entry:
+`registry.json` entry (JSON so the router and lint need no YAML dependency):
 
-```yaml
-- id: dsa
-  skill: prep-dsa
-  flags: [--dsa, --algo]
-  triggers: [leetcode, array, graph, dp, two pointers, complexity, "give me a problem"]
-  modes: [problem, quiz, explain, review, mock]
-  default_mode: problem
-  default_difficulty: 2
-  memory: ${PREP_MEMORY_DIR:-~/.claude/prep-memory}/dsa
+```json
+{"id": "dsa", "skill": "prep-dsa", "path": "prep-dsa", "kind": "code",
+ "flags": ["--dsa", "--algo"], "triggers": ["leetcode", "graph", "two pointers", "..."],
+ "modes": ["problem", "quiz", "explain", "review", "mock"],
+ "default_mode": "problem", "default_difficulty": 2}
 ```
+
+A parent (e.g. quant) has `"kind": "router"` and `"children": "prep-quant/registry.json"`.
 
 ### 3. Template contract (what every domain skill contains)
 
@@ -165,7 +163,7 @@ Three files per domain, split by access pattern:
 1. Ask ≤4 questions: flag/aliases, task types, code-checkable vs knowledge vs design, difficulty anchors.
 2. Instantiate `template/` → `.claude/skills/prep-<domain>/` with taxonomy + flaw codes seeded.
 3. Write `.claude/skills/prep-<domain>/references/schema.md` (the domain's `x` block) in the repo; the empty `profile.md`/`log.jsonl`/`notes.md` are created in the user-level memory dir on first session, not in the repo.
-4. Append an entry to `registry.yaml` (or a parent registry for nested).
+4. Append an entry to `registry.json` (or a parent registry for nested).
 5. Run a lint: required sections present, registry id unique, flag not colliding, schema valid JSON example.
 
 ## Options Considered
@@ -217,7 +215,7 @@ Three files per domain, split by access pattern:
 
 ## Action Items (build order)
 
-1. [ ] `prep/SKILL.md`, `registry.yaml`, `references/{routing,difficulty,session-contract}.md`
+1. [ ] `prep/SKILL.md`, `registry.json`, `references/{routing,difficulty,session-contract}.md`
 2. [ ] `prep-new/template/*` (the template + memory drafts) and `prep-new/SKILL.md` scaffolder with lint
 3. [ ] Reference domain #1: `prep-dsa` (hardest, exercises the verification harness + all memory fields)
 4. [ ] Domain #2 as a quiz type: `prep-os` (validates the knowledge-domain gate)
@@ -235,3 +233,12 @@ None blocking. Resolved:
 3. Memory: **outside the repo**, user-level Claude directory (see Layout and durability caveat). Repo = skills + schemas only.
 
 Still open: whether you want a persistent location for cloud sessions (e.g. mounted volume) or are fine running locally.
+
+## Implementation notes (as built)
+
+- **Router is code, not prompt:** `prep/scripts/route.py` does flag parsing, trigger scoring (min score 2, lead 2, plural-tolerant), mode/difficulty inference. Ambiguity returns `ask`. 40 routing cases in `evals/`.
+- **Level and spaced repetition are code:** `prep/scripts/memory.py` computes `recommended_level` (+1 after 2 clean passes, -1 after 2 fails), weak tags, flaw watch list, due items (1/3/7/14-day ladder, retire after 4 passes). Batch append is atomic.
+- **Domains are generated:** `prep-new/specs/*.json` + `template/` → SKILL.md, taxonomy, rubric, schema, registry entry. Scaffold refuses flag collisions and invalid specs; `lint.py` guards the tree.
+- **DSA accuracy:** `prep-dsa/harness/judge.py` (C++20, ASan/UBSan, PCH + parallel runs: verify ≈4 s, judge ≈3 s warm). 12 seeded-wrong problems (overflow, empty subarray, off-by-one, slow ref, fast brute, no edge cases, ...) are all rejected by `verify`.
+- **Quant accuracy:** probability answers are computed exactly (`Fraction`) and cross-checked by Monte Carlo before use; mental-math questions and grading come from `drill.py`.
+- **Not implemented / future:** cross-domain readiness score, per-company packs, language options beyond C++ for the DSA harness.

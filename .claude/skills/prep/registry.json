@@ -2,6 +2,67 @@
   "version": 1,
   "domains": [
     {
+      "id": "quant",
+      "skill": "prep-quant",
+      "path": "prep-quant",
+      "kind": "router",
+      "flags": [
+        "--quant"
+      ],
+      "triggers": [
+        "quant",
+        "quantitative",
+        "jane street",
+        "citadel",
+        "hrt",
+        "optiver",
+        "market making",
+        "trading interview"
+      ],
+      "children": "prep-quant/registry.json"
+    },
+    {
+      "id": "dsa",
+      "skill": "prep-dsa",
+      "path": "prep-dsa",
+      "kind": "code",
+      "flags": [
+        "--dsa",
+        "--algo"
+      ],
+      "triggers": [
+        "dsa",
+        "leetcode",
+        "algorithm",
+        "data structure",
+        "array",
+        "string problem",
+        "linked list",
+        "binary tree",
+        "graph",
+        "dp",
+        "dynamic programming",
+        "two pointers",
+        "sliding window",
+        "binary search",
+        "heap",
+        "greedy",
+        "backtracking",
+        "time complexity",
+        "coding problem",
+        "coding question"
+      ],
+      "modes": [
+        "problem",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "problem",
+      "default_difficulty": 2
+    },
+    {
       "id": "os",
       "skill": "prep-os",
       "path": "prep-os",
@@ -122,73 +183,12 @@
         "strengths and weaknesses"
       ],
       "modes": [
-        "design",
-        "quiz",
-        "review",
-        "mock"
+        "mock",
+        "story",
+        "drill",
+        "review"
       ],
       "default_mode": "mock",
-      "default_difficulty": 2
-    },
-    {
-      "id": "quant",
-      "skill": "prep-quant",
-      "path": "prep-quant",
-      "kind": "router",
-      "flags": [
-        "--quant"
-      ],
-      "triggers": [
-        "quant",
-        "quantitative",
-        "jane street",
-        "citadel",
-        "hrt",
-        "optiver",
-        "market making",
-        "trading interview"
-      ],
-      "children": "prep-quant/registry.json"
-    },
-    {
-      "id": "dsa",
-      "skill": "prep-dsa",
-      "path": "prep-dsa",
-      "kind": "code",
-      "flags": [
-        "--dsa",
-        "--algo"
-      ],
-      "triggers": [
-        "dsa",
-        "leetcode",
-        "algorithm",
-        "data structure",
-        "array",
-        "string problem",
-        "linked list",
-        "binary tree",
-        "graph",
-        "dp",
-        "dynamic programming",
-        "two pointers",
-        "sliding window",
-        "binary search",
-        "heap",
-        "greedy",
-        "backtracking",
-        "time complexity",
-        "coding problem",
-        "coding question"
-      ],
-      "modes": [
-        "problem",
-        "quiz",
-        "explain",
-        "review",
-        "mock"
-      ],
-      "default_mode": "problem",
       "default_difficulty": 2
     }
   ]

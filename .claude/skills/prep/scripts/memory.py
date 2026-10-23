@@ -13,13 +13,14 @@ Commands:
   init <key> [--default-level N]     create files if missing
   profile <key>                      print profile.md (rebuilds if stale)
   rebuild <key>                      recompute profile.md from log.jsonl
-  append <key>                       read one episode JSON on stdin, validate, append, rebuild
+  append <key>                       read one episode JSON (or a JSON list) on stdin, validate all, append, rebuild
   tail <key> [n]                     last n log entries (default 5)
   seen <key> <ref>                   exit 0 if ref already in log (dedupe)
   note <key> "text"                  append a remark to notes.md (compacts past 30 lines)
   save-item <key> <ref> <path>       copy file/dir into items/<ref>
   due <key> [--now ISO]              refs due for spaced-repetition review
   path <key>                         print the resolved directory
+  summary                            JSON overview of every domain with memory (level, weakest tag, due count)
 """
 import datetime as dt, json, os, shutil, sys
 from collections import Counter, defaultdict
@@ -151,11 +152,16 @@ def rebuild(key):
 
 
 def append(key, ep):
-    validate(ep)
+    """ep is one episode dict or a list of them (e.g. one per quiz question); all-or-nothing."""
+    eps = ep if isinstance(ep, list) else [ep]
+    for e in eps:
+        validate(e)
     init(key)
-    ep.setdefault("id", f"{ep['ts']}-{key.replace('/', '-')}-{len(read_log(key)) + 1:03d}")
+    n = len(read_log(key))
     with open(os.path.join(d(key), "log.jsonl"), "a") as f:
-        f.write(json.dumps(ep, separators=(",", ":")) + "\n")
+        for i, e in enumerate(eps, 1):
+            e.setdefault("id", f"{e['ts']}-{key.replace('/', '-')}-{n + i:03d}")
+            f.write(json.dumps(e, separators=(",", ":")) + "\n")
     return rebuild(key)
 
 
@@ -197,7 +203,25 @@ def due(key, now=None):
     return sorted(out, key=lambda x: x["due"])
 
 
+def summary():
+    """One line per domain that has memory: level, sessions, weakest tag, due count."""
+    rows = []
+    base = root()
+    for dp, dn, fn in os.walk(base):
+        if "log.jsonl" in fn:
+            key = os.path.relpath(dp, base).replace(os.sep, "/")
+            log = read_log(key)
+            st = tag_stats(log)
+            weak = min(((s_ / n, t) for t, (s_, n) in st.items() if n >= 2), default=None)
+            rows.append({"domain": key, "level": level_state(log, meta(key).get("default_level", 2)),
+                         "sessions": len(log), "weakest": f"{weak[1]} ({weak[0]:.0%})" if weak else None,
+                         "due": len(due(key)), "last": log[-1]["ts"][:10] if log else None})
+    return sorted(rows, key=lambda r: (-r["due"], r["last"] or ""))
+
+
 def main(a):
+    if a[:1] == ["summary"]:
+        print(json.dumps(summary(), indent=1)); return 0
     if len(a) < 2:
         print(__doc__); return 2
     cmd, key = a[0], a[1]

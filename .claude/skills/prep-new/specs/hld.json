@@ -1,0 +1,116 @@
+{
+  "id": "hld",
+  "title": "High-Level System Design",
+  "kind": "design",
+  "flags": [
+    "--hld",
+    "--sd"
+  ],
+  "triggers": [
+    "hld",
+    "high level design",
+    "system design",
+    "design twitter",
+    "design a url shortener",
+    "scalability",
+    "sharding",
+    "load balancer",
+    "caching",
+    "cap theorem",
+    "consistent hashing",
+    "message queue",
+    "back of the envelope",
+    "microservices"
+  ],
+  "scope_in": "Distributed system design interviews: requirements, estimation, APIs, data models, storage choice, caching, partitioning, replication/consistency, queues/streams, failure modes, observability.",
+  "scope_out": "Class-level design (prep-lld), implementation code, vendor marketing comparisons.",
+  "modes": [
+    {
+      "id": "design",
+      "input": "difficulty, optional system",
+      "output": "one HLD problem walked through the standard stages, graded vs hidden rubric with one stress probe"
+    },
+    {
+      "id": "quiz",
+      "input": "difficulty, topic, n",
+      "output": "rapid trade-off and numbers questions (e.g. quorum maths, when to shard, cache invalidation)"
+    },
+    {
+      "id": "explain",
+      "input": "concept",
+      "output": "clear a concept: problem, mechanism, trade-offs, when NOT to use it, numbers"
+    },
+    {
+      "id": "review",
+      "input": "none or topic",
+      "output": "re-run weak areas from memory with a harder variant"
+    },
+    {
+      "id": "mock",
+      "input": "time box (default 45m)",
+      "output": "full interviewer simulation with deep-dive requested on the weakest decision"
+    }
+  ],
+  "default_mode": "design",
+  "default_difficulty": 3,
+  "ladder": [
+    "URL shortener, pastebin: single DB, simple cache, ID generation.",
+    "Rate limiter, notification service, news feed (small), key-value store single node: one scaling idea each.",
+    "Twitter timeline, WhatsApp chat, Uber-lite, web crawler: fan-out choices, sharding, queues, hot keys.",
+    "Distributed KV store, ticket booking with strong consistency, YouTube, distributed cache: replication, consensus-adjacent trade-offs, failure handling.",
+    "Ad click aggregation with exactly-once, global strongly-consistent store, collaborative editor (CRDT/OT), Spanner-like design: deep consistency/time/failure reasoning."
+  ],
+  "topics": [
+    "requirements",
+    "estimation",
+    "api-design",
+    "data-modeling",
+    "sql-vs-nosql",
+    "caching",
+    "sharding-partitioning",
+    "replication-consistency",
+    "queues-streams",
+    "load-balancing-cdn",
+    "rate-limiting",
+    "search-indexing",
+    "realtime-push",
+    "failure-modes",
+    "observability",
+    "security-privacy",
+    "cost"
+  ],
+  "flaws": {
+    "F-NO-REQUIREMENTS": "Jumped to boxes without functional/non-functional requirements.",
+    "F-NO-ESTIMATION": "No back-of-envelope numbers where scale decides the design.",
+    "F-ESTIMATION-ERROR": "Arithmetic or order-of-magnitude error in estimates.",
+    "F-NO-TRADEOFFS": "Chose a component without naming alternatives and costs.",
+    "F-WRONG-STORE": "Storage choice inconsistent with access pattern or consistency need.",
+    "F-CONSISTENCY-IGNORED": "No stance on consistency/staleness/ordering where it matters.",
+    "F-SPOF": "Single point of failure left in the design.",
+    "F-HOTSPOT-IGNORED": "Skew / hot key / thundering herd not considered.",
+    "F-NO-FAILURE-MODES": "Did not discuss what fails and how it recovers.",
+    "F-BUZZWORD-DROPPING": "Named technologies without explaining the mechanism or why.",
+    "F-OVERCOMPLICATED": "Microservices/queues/caches added with no requirement.",
+    "F-API-DATA-MISSING": "No API or data model before architecture.",
+    "F-DEPTH-LACK": "Could not go deep when the interviewer drilled into a component."
+  },
+  "x_fields": {
+    "system": "What was designed.",
+    "requirements_missed": "Requirements (esp. non-functional) the user never raised.",
+    "numbers_estimated": "true/false",
+    "estimation_error_pct": "Largest estimation error vs your verified numbers.",
+    "bottleneck_identified": "true/false plus which.",
+    "tradeoffs_named": "Count of explicit trade-offs.",
+    "deep_dive_topic": "Component drilled into and outcome.",
+    "stress_probe": "The probe posed (10x scale, node loss, etc.) and pass/fail."
+  },
+  "item_ref_format": "hld-<system>-<variant>",
+  "items_note": "prompt, hidden rubric, verified numbers, reference sketch",
+  "rubric_body": "Score each 0-2:\n\n| Dimension | Looks for |\n|-----------|-----------|\n| Requirements | functional + non-functional (latency, availability, consistency, scale), scope cut |\n| Estimation | QPS, storage, bandwidth within ~2x of verified numbers, and *used* to decide |\n| API & data model | endpoints/entities before boxes |\n| Architecture | coherent flow, right components for the load |\n| Trade-offs | alternatives named, costs explicit |\n| Scalability | partitioning, caching, hotspots, queues where warranted |\n| Reliability | failure modes, replication, degradation, SPOFs |\n| Depth | convincing deep dive on one component |",
+  "outcome_rule": "Weighted /16 (Trade-offs, Scalability, Reliability double): **pass** ≥ 70% with no 0 in Requirements or Trade-offs; **partial** 40-70%; **fail** < 40%.",
+  "gate_extra": [
+    "Verify every number (QPS, storage, bandwidth, cache size) with a script; keep the table in the hidden rubric and compare the user's estimates against it, not against intuition.",
+    "State consistency/availability claims precisely (e.g. quorum R+W>N reasoning, CAP vs PACELC); if unsure of a protocol detail, say so rather than assert it."
+  ],
+  "loop_extra": "\n### Stages (user may reorder; you grade coverage)\nRequirements → estimation → API → data model → high-level architecture → deep dive → bottlenecks/failures → stress probe. Do not volunteer the next stage; ask 'what next?' only after silence."
+}

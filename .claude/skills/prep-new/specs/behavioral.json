@@ -1,0 +1,100 @@
+{
+  "id": "behavioral",
+  "title": "Behavioral & HR Rounds",
+  "kind": "design",
+  "flags": [
+    "--behavioral",
+    "--hr",
+    "--bq"
+  ],
+  "triggers": [
+    "behavioral",
+    "behavioural",
+    "star method",
+    "tell me about a time",
+    "leadership principles",
+    "conflict with",
+    "hr round",
+    "tell me about yourself",
+    "strengths and weaknesses"
+  ],
+  "scope_in": "Behavioral interview rounds: STAR stories, competencies (ownership, conflict, failure, ambiguity, leadership, influence), 'tell me about yourself', motivation, questions for the interviewer.",
+  "scope_out": "Technical correctness (other domains), salary negotiation scripts (separate domain if wanted).",
+  "modes": [
+    {
+      "id": "mock",
+      "input": "n questions, optional competency",
+      "output": "interviewer questions one at a time with realistic follow-ups, graded at the end"
+    },
+    {
+      "id": "story",
+      "input": "an experience the user describes",
+      "output": "shape it into a STAR story: gaps flagged, questions to extract metrics; saved to the story bank"
+    },
+    {
+      "id": "drill",
+      "input": "one competency",
+      "output": "a single question, rapid scoring, sharper rewrite of the weakest sentence"
+    },
+    {
+      "id": "review",
+      "input": "none",
+      "output": "re-test saved stories against new questions to check they flex across competencies"
+    }
+  ],
+  "default_mode": "mock",
+  "default_difficulty": 2,
+  "ladder": [
+    "Simple prompts: tell me about yourself, why this company, a strength.",
+    "Standard STAR: a conflict, a deadline you met, a time you learned something.",
+    "Probing: failure with real consequences, disagreeing with a manager, ambiguity, with 2 follow-ups.",
+    "Senior-level: influence without authority, a decision with incomplete data, org-level impact, trade-offs between people and delivery.",
+    "Hostile/ambiguous interviewer: challenges your claims, asks 'what would you do differently?', probes ownership vs team credit."
+  ],
+  "topics": [
+    "ownership",
+    "conflict",
+    "failure-learning",
+    "leadership",
+    "ambiguity",
+    "influence",
+    "deadline-pressure",
+    "mentoring",
+    "customer-focus",
+    "motivation",
+    "strengths-weaknesses",
+    "intro-pitch",
+    "questions-for-interviewer"
+  ],
+  "flaws": {
+    "F-NO-RESULT": "Story ends without an outcome.",
+    "F-NO-METRIC": "No numbers or concrete evidence of impact.",
+    "F-WE-NOT-I": "Unclear personal contribution ('we' throughout).",
+    "F-RAMBLING": "Over ~2.5 minutes or lost structure.",
+    "F-TOO-THIN": "Under ~45 seconds; no situational detail.",
+    "F-BLAME": "Blames others or the company.",
+    "F-GENERIC": "Could be anyone's answer; no specifics.",
+    "F-NO-REFLECTION": "No learning or what-I'd-change.",
+    "F-WEAK-SITUATION": "Low-stakes situation chosen for the competency.",
+    "F-DEFENSIVE": "Defensive under a probing follow-up."
+  },
+  "x_fields": {
+    "competency": "Primary competency tested.",
+    "story_ref": "Story-bank id of the story used.",
+    "star_complete": "Which of S/T/A/R were present.",
+    "quantified": "true/false: a metric in the result.",
+    "i_vs_we": "Rough ratio or 'clear' / 'unclear' personal ownership.",
+    "length_s": "Approx spoken length (word count / 2.5).",
+    "followup_handling": "Held / wobbled / defensive."
+  },
+  "item_ref_format": "beh-<competency>-<short-slug>",
+  "items_note": "the user's story text (the story bank) and the rewritten version",
+  "rubric_body": "Score each 0-2:\n\n| Dimension | Looks for |\n|-----------|-----------|\n| Structure | S/T/A/R clearly delineated, answer first-pass under ~2.5 min |\n| Ownership | specific personal actions ('I decided...'), team credit stated accurately |\n| Impact | measurable result, scale, stakes |\n| Reflection | learning, what would change |\n| Relevance | story fits the competency asked |\n| Handling follow-ups | consistent, honest, non-defensive |",
+  "outcome_rule": "Total /12: **pass** ≥ 9 with Ownership ≥ 1; **partial** 5-8; **fail** < 5.",
+  "gate_extra": [
+    "Never invent or embellish the user's experiences. Stories come only from the user; you coach structure, extract specifics, and rewrite their own words more sharply.",
+    "Do not 'grade' honesty away: if a claim sounds implausible, probe it as an interviewer would instead of silently accepting it."
+  ],
+  "timed": false,
+  "loop_extra": "\n### Behavioral specifics\n`story` mode: ask at most 3 extraction questions at a time (what exactly did YOU do, what was the number, what would you change); then produce the STAR draft in the user's voice and `save-item` it as the story bank entry (item.ref `beh-<competency>-<slug>`). `mock`: one question, wait for the answer, one follow-up, move on."
+}

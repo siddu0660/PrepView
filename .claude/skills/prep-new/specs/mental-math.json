@@ -1,0 +1,96 @@
+{
+  "id": "mental-math",
+  "parent": "quant",
+  "title": "Quant Mental Math",
+  "kind": "code",
+  "flags": [
+    "--mental-math",
+    "--mm",
+    "--quant.mm"
+  ],
+  "triggers": [
+    "mental math",
+    "mental arithmetic",
+    "arithmetic speed",
+    "zetamac",
+    "quick calculation",
+    "estimate quickly",
+    "percentage calculation",
+    "multiply quickly"
+  ],
+  "scope_in": "Speed arithmetic for quant interviews: add/subtract, multiplication, squares, percentages, fractions-decimals, division, estimation, compound growth, logs/roots approximation.",
+  "scope_out": "Probability reasoning (quant/prob), written-calculation tutoring.",
+  "modes": [
+    {
+      "id": "drill",
+      "input": "difficulty, n, categories",
+      "output": "batch of generated questions (answers hidden), graded by script, per-category accuracy and time"
+    },
+    {
+      "id": "quiz",
+      "input": "technique",
+      "output": "short set that forces one trick (e.g. squares near 50, x*11, percent flips)"
+    },
+    {
+      "id": "explain",
+      "input": "operation",
+      "output": "fastest mental method, 3 examples, common slip"
+    },
+    {
+      "id": "review",
+      "input": "none",
+      "output": "targeted drill on categories with worst error rate"
+    }
+  ],
+  "default_mode": "drill",
+  "default_difficulty": 2,
+  "timed": true,
+  "ladder": [
+    "2-digit add/subtract, x2/x5/x10/x11, simple percents (10%, 50%).",
+    "2x2 digit multiplication, squares to 30, division with clean results, 15%/25% tips.",
+    "3x2 multiplication, decimals, percent chains, fractions to decimals (1/7, 1/9, 1/12).",
+    "Estimation within 1-2%: compound interest, sqrt/cube estimates, ratios, products of 3 numbers.",
+    "Zetamac-hard pace with mixed operations, logs/exponent estimation, 4-digit by 2-digit within a tolerance."
+  ],
+  "topics": [
+    "add-sub",
+    "mul-2digit",
+    "mul-3x2",
+    "squares",
+    "percent",
+    "fractions-decimals",
+    "division",
+    "powers-roots",
+    "compound-growth",
+    "estimation-logs",
+    "ratios-odds"
+  ],
+  "flaws": {
+    "F-MM-CARRY": "Carry/borrow errors in add/subtract.",
+    "F-MM-SIGN": "Sign errors with negatives.",
+    "F-MM-DECIMAL-PLACE": "Decimal point misplacement.",
+    "F-MM-FRACTION-CONV": "Wrong fraction-decimal-percent conversion.",
+    "F-MM-ESTIMATION-DRIFT": "Estimate outside tolerance (rounding too aggressively).",
+    "F-MM-SLOW": "Correct but over the per-question time target.",
+    "F-MM-GUESS": "Wild guess (error > 50%).",
+    "F-MM-METHOD-NAIVE": "Used long multiplication where a decomposition trick exists."
+  },
+  "x_fields": {
+    "category_stats": "Per category {n, correct, avg_time_s}.",
+    "n": "Questions in the drill.",
+    "accuracy": "Overall fraction correct.",
+    "avg_time_s": "Mean seconds per question.",
+    "target_time_s": "Target per question at this level.",
+    "worst_category": "Category with lowest accuracy.",
+    "seed": "Generator seed (replayable)."
+  },
+  "item_ref_format": "mm-<cat>-L<level>-s<seed>",
+  "items_note": "the generated question file with answers and the user's answers",
+  "rubric_body": "Graded by `scripts/drill.py grade` (exact for integers, tolerance for estimation categories).\n\n| Dimension | Evidence |\n|-----------|----------|\n| Accuracy | fraction correct overall and per category |\n| Speed | average seconds/question vs `target_time_s` (user-reported total time) |\n| Method | noted from the explanations the user gives when asked how they got a miss |",
+  "outcome_rule": "Per drill: **pass** accuracy ≥ 90% and avg time ≤ target; **partial** accuracy 70-90% or over time; **fail** < 70%.\nTargets (s/question): L1 6, L2 10, L3 15, L4 20, L5 25.",
+  "gate_extra": [
+    "All questions and answers come from `python3 scripts/drill.py gen` (exact arithmetic with Python integers/Fractions) — never compute answers yourself.",
+    "Grade with `python3 scripts/drill.py grade <file> <answers>`; do not eyeball."
+  ],
+  "loop_extra": "\n### Drill specifics\n1. `python3 scripts/drill.py gen --level L --n N --seed S [--cats a,b] > $P/drill.json` (seed = unix time unless replaying a stored item).\n2. Show only the `q` fields, numbered. User replies with answers (comma/newline separated) and total time (e.g. `... | 95s`).\n3. `python3 scripts/drill.py grade $P/drill.json \"<answers>\" --time <seconds>` → JSON with per-question result, per-category accuracy, avg time, flaws.\n4. Debrief: misses with correct answer + the fastest method for each; one `episode` per drill (not per question), `item.tags` = categories drilled."
+}

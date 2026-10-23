@@ -2,18 +2,69 @@
   "version": 1,
   "domains": [
     {
-      "id": "prob", "skill": "prep-quant-prob", "path": "prep-quant/prob", "kind": "code",
-      "flags": ["--prob", "--quant.prob"],
-      "triggers": ["probability", "expected value", "conditional probability", "bayes", "random variable", "variance", "markov chain", "random walk", "combinatorics", "dice", "coin flip", "card game", "stopping time", "martingale", "distribution"],
-      "modes": ["problem", "quiz", "explain", "review", "mock"],
-      "default_mode": "problem", "default_difficulty": 3
+      "id": "prob",
+      "skill": "prep-quant-prob",
+      "path": "prep-quant/prob",
+      "kind": "code",
+      "flags": [
+        "--prob",
+        "--quant.prob"
+      ],
+      "triggers": [
+        "probability",
+        "expected value",
+        "conditional probability",
+        "bayes",
+        "random variable",
+        "variance",
+        "markov chain",
+        "random walk",
+        "combinatorics",
+        "dice",
+        "coin flip",
+        "card game",
+        "stopping time",
+        "martingale",
+        "distribution"
+      ],
+      "modes": [
+        "problem",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "problem",
+      "default_difficulty": 3
     },
     {
-      "id": "mental-math", "skill": "prep-quant-mental-math", "path": "prep-quant/mental-math", "kind": "code",
-      "flags": ["--mental-math", "--mm", "--quant.mm"],
-      "triggers": ["mental math", "mental arithmetic", "arithmetic speed", "zetamac", "quick calculation", "estimate quickly", "percentage calculation", "multiply quickly"],
-      "modes": ["drill", "quiz", "explain", "review"],
-      "default_mode": "drill", "default_difficulty": 2
+      "id": "mental-math",
+      "skill": "prep-quant-mental-math",
+      "path": "prep-quant/mental-math",
+      "kind": "code",
+      "flags": [
+        "--mental-math",
+        "--mm",
+        "--quant.mm"
+      ],
+      "triggers": [
+        "mental math",
+        "mental arithmetic",
+        "arithmetic speed",
+        "zetamac",
+        "quick calculation",
+        "estimate quickly",
+        "percentage calculation",
+        "multiply quickly"
+      ],
+      "modes": [
+        "drill",
+        "quiz",
+        "explain",
+        "review"
+      ],
+      "default_mode": "drill",
+      "default_difficulty": 2
     }
   ]
 }

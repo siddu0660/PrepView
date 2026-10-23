@@ -1,0 +1,107 @@
+{
+  "id": "lld",
+  "title": "Low-Level Design (OOD)",
+  "kind": "design",
+  "flags": [
+    "--lld",
+    "--oop"
+  ],
+  "triggers": [
+    "lld",
+    "low level design",
+    "object oriented design",
+    "class design",
+    "design pattern",
+    "solid",
+    "parking lot",
+    "design an elevator",
+    "uml",
+    "design a library system"
+  ],
+  "scope_in": "Object-oriented design interviews in C++: requirements, entities, relationships, patterns, SOLID, state machines, concurrency in design, extensibility, clean public APIs.",
+  "scope_out": "Distributed architecture (prep-hld), algorithm optimisation (prep-dsa), language syntax drills.",
+  "modes": [
+    {
+      "id": "design",
+      "input": "difficulty, optional system",
+      "output": "one LLD problem: requirements dialogue, user's design + C++ skeleton, graded vs hidden rubric with an extensibility probe"
+    },
+    {
+      "id": "quiz",
+      "input": "difficulty, topic, n",
+      "output": "pattern/principle questions (which pattern, spot the smell, fix the violation)"
+    },
+    {
+      "id": "explain",
+      "input": "pattern/principle",
+      "output": "problem it solves, C++ minimal example, misuse cases, relation to neighbours"
+    },
+    {
+      "id": "review",
+      "input": "none or topic",
+      "output": "revisit weak designs/smells from memory with a changed requirement"
+    },
+    {
+      "id": "mock",
+      "input": "time box (default 45m)",
+      "output": "interviewer simulation: sparse prompt, clarifications on request, 1 mid-session requirement change"
+    }
+  ],
+  "default_mode": "design",
+  "default_difficulty": 2,
+  "ladder": [
+    "Tic-tac-toe, parking lot (single type), basic bank account: 3-5 classes, clear nouns/verbs.",
+    "Library system, vending machine (state), elevator (single car): one pattern needed (State/Strategy).",
+    "Splitwise, ATM, multi-elevator scheduler, chess: several patterns, invariants, validation rules.",
+    "Thread-safe LRU/cache, rate limiter, logger framework, pub-sub, task scheduler: concurrency and extensibility under change.",
+    "Plugin architecture, workflow engine, game engine core, text editor with undo/redo and collaboration hooks: layered design with strong trade-off defence."
+  ],
+  "topics": [
+    "oop-principles",
+    "solid",
+    "creational-patterns",
+    "structural-patterns",
+    "behavioral-patterns",
+    "state-machines",
+    "concurrency-design",
+    "api-design",
+    "extensibility",
+    "error-handling",
+    "testing-design",
+    "classic-problems"
+  ],
+  "flaws": {
+    "F-MISSING-REQ": "Did not clarify requirements/actors/scale before designing.",
+    "F-GOD-CLASS": "One class owns too many responsibilities (SRP).",
+    "F-NO-ABSTRACTION": "Concrete types everywhere; no seam for variation (OCP/DIP).",
+    "F-OVER-ENGINEERING": "Patterns or layers with no requirement behind them.",
+    "F-PATTERN-MISUSE": "Pattern applied to the wrong problem or implemented incorrectly.",
+    "F-LSP-VIOLATION": "Subtype breaks base-class contract.",
+    "F-TIGHT-COUPLING": "Classes reach into each other's internals; hard to test or replace.",
+    "F-NO-CONCURRENCY": "Shared state with no thread-safety story when the requirements imply it.",
+    "F-STATE-LEAK": "Invariants can be broken from outside (public mutable state, no validation).",
+    "F-NO-ERROR-HANDLING": "Failure cases/invalid transitions unhandled.",
+    "F-EXTENSIBILITY-FAIL": "Changed-requirement probe required rewriting, not extending.",
+    "F-NOT-COMPILABLE": "C++ skeleton does not compile (g++ -fsyntax-only).",
+    "F-RESOURCE-MGMT": "C++ ownership issues: raw new/delete, missing virtual destructor, copy/move mistakes."
+  },
+  "x_fields": {
+    "system": "What was designed (e.g. 'parking lot').",
+    "entities": "Core classes/interfaces identified.",
+    "patterns_used": "Patterns applied and whether justified.",
+    "smells": "Design smells observed in the user's design.",
+    "extensibility_probe": "The changed requirement posed and pass/fail.",
+    "concurrency_considered": "true/false",
+    "compiles": "true/false for user's C++ skeleton",
+    "requirements_clarified": "number of clarifying questions asked"
+  },
+  "item_ref_format": "lld-<system>-<variant>",
+  "items_note": "prompt, hidden rubric, reference class sketch, user's last design",
+  "rubric_body": "Score each 0-2 (0 missing, 1 partial, 2 solid):\n\n| Dimension | Looks for |\n|-----------|-----------|\n| Requirements | actors, use-cases, constraints, out-of-scope stated |\n| Entities & relations | right nouns, ownership, cardinality |\n| Responsibilities | each class one reason to change |\n| Patterns & abstraction | used where variation exists, not elsewhere |\n| Correctness | invariants, state transitions, error paths |\n| Concurrency | shared state protected / reasoned about |\n| Extensibility | handled the changed requirement without rewrite |\n| Code | compiles; sensible C++ (RAII, virtual dtor, const-correctness) |",
+  "outcome_rule": "Weighted total /16 (Correctness and Extensibility count double): **pass** ≥ 75% with no 0 in Correctness; **partial** 40-75%; **fail** < 40% or Correctness = 0.",
+  "gate_extra": [
+    "Any C++ skeleton you show (reference or critique) must pass `g++ -std=c++20 -fsyntax-only` first; run the user's skeleton through the same check and report compile errors as `F-NOT-COMPILABLE` rather than judging by eye.",
+    "Prepare the extensibility probe (a changed requirement) at generation time, together with the hidden rubric; do not invent it after seeing the user's design."
+  ],
+  "loop_extra": "\n### Design specifics\nPresent a one-line prompt only; answer clarifying questions tersely and in character. Let the user drive; interrupt only to enforce the time box. Pose the extensibility probe after their first full design."
+}

@@ -7,6 +7,7 @@ description: {{description}}
 
 Invoked by `/prep` after routing. Follow `{{prep_rel}}/references/session-contract.md` (loop + exact memory-write procedure) and `{{prep_rel}}/references/difficulty.md`.
 `MEM` = `python3 {{mem_cmd}}` · memory key = `{{memory_key}}` · inputs from orchestrator: `mode, difficulty, n, timed, text, profile`.
+If invoked directly (no orchestrator), set it up yourself: `MEM init {{memory_key}} --default-level {{default_difficulty}}`, `MEM profile {{memory_key}}`, mode = `{{default_mode}}`, difficulty = profile `recommended_level`.
 
 ## 1. Scope
 **In:** {{scope_in}}

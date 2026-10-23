@@ -34,5 +34,15 @@ Generate → Verify → Present → Interact → Grade → Debrief → Remember
 3. `$MEM note <key> "<≤140-char takeaway>"` — at most 3 per session, only things worth re-reading.
 4. A non-zero exit from `$MEM append` → print the stderr once, continue. Never retry in a loop.
 
+## Review mode (spaced repetition)
+
+Triggered by `--mode review` or "revise". Source of truth: `$MEM due <key>` (ladder 1 → 3 → 7 → 14 days; an item retires after 4 consecutive passes; items passed first time are never tracked).
+
+1. Take up to `n` due refs (oldest due first). None due → say so, offer a normal session or the weakest `weak_tags` instead.
+2. For each, load `items/<ref>` (`$MEM path <key>`). Never re-show the old answer or the user's old solution first.
+3. Present a **variant**, not the identical item, so memorising cannot pass it: code domains change constraints/parameters and re-run the Verify gate; knowledge domains ask the same concept from a new angle; design domains change one requirement; quant changes the numbers and recomputes the answer with the script.
+4. Grade normally and log the episode under the **original `item.ref`** (that is what advances or resets its stage); put the variant description in `x.variant`.
+5. Debrief compares with the earlier attempt using the stored `flaws`/`remark`: fixed, persistent or new.
+
 ## Style
 Terse. No praise padding. Accuracy over friendliness: if the user is wrong, say so with the counter-example.
