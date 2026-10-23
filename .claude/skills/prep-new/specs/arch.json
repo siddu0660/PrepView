@@ -1,0 +1,117 @@
+{
+  "id": "arch",
+  "title": "Computer Architecture",
+  "kind": "knowledge",
+  "flags": [
+    "--arch"
+  ],
+  "triggers": [
+    "computer architecture",
+    "cpu pipeline",
+    "pipelining",
+    "hazard",
+    "branch prediction",
+    "out of order execution",
+    "cache coherence",
+    "mesi",
+    "cache hit rate",
+    "amat",
+    "set associative",
+    "instruction set",
+    "risc",
+    "cisc",
+    "cpi",
+    "amdahl",
+    "superscalar",
+    "memory hierarchy",
+    "simd",
+    "memory consistency"
+  ],
+  "scope_in": "Interview-level computer architecture: ISA (RISC/CISC), pipelining and hazards, branch prediction, out-of-order/superscalar execution, cache organization and replacement, cache coherence (MESI), memory consistency models, hardware side of virtual memory, performance equations (CPI, Amdahl), SIMD, multicore/NUMA, GPU basics.",
+  "scope_out": "Digital logic design/Verilog, OS algorithms (prep-os), microarchitecture of one specific vendor chip.",
+  "modes": [
+    {
+      "id": "quiz",
+      "input": "difficulty, optional topic, n",
+      "output": "n keyed questions incl. calculations verified by script"
+    },
+    {
+      "id": "explain",
+      "input": "concept",
+      "output": "mechanism with a small worked example, hazards/trade-offs, 2 follow-ups"
+    },
+    {
+      "id": "review",
+      "input": "none or topic",
+      "output": "spaced repetition of missed items with new numbers"
+    },
+    {
+      "id": "mock",
+      "input": "time box",
+      "output": "oral interviewer: chained questions from ISA down to cache behaviour of a code snippet"
+    }
+  ],
+  "default_mode": "quiz",
+  "default_difficulty": 2,
+  "ladder": [
+    "Recall: RISC vs CISC, what a pipeline stage is, what a cache line is, definition of CPI.",
+    "Mechanism: 5-stage pipeline, RAW/WAR/WAW hazards, direct-mapped vs set-associative, write-through vs write-back.",
+    "Applied: AMAT with two levels, CPI with instruction mix, tag/index/offset split, Amdahl speedup, stall counting with forwarding.",
+    "Deep: Tomasulo/reorder buffer, 2-bit predictor traces, MESI transitions for a sequence of accesses, false sharing, store buffers and TSO vs SC.",
+    "Expert: reasoning about cache-miss behaviour of loop nests, memory-ordering litmus tests, prefetching trade-offs, NUMA effects, designing a cache for a workload."
+  ],
+  "topics": [
+    "isa-risc-cisc",
+    "pipelining-hazards",
+    "branch-prediction",
+    "ooo-superscalar",
+    "cache-organization",
+    "cache-replacement-write-policy",
+    "cache-coherence",
+    "memory-consistency",
+    "virtual-memory-hardware",
+    "performance-equations",
+    "simd-vector",
+    "multicore-numa",
+    "gpu-basics"
+  ],
+  "flaws": {
+    "F-CONCEPT-CONFUSION": "Mixed up two related concepts.",
+    "F-DEF-WRONG": "Incorrect or imprecise definition.",
+    "F-CALC-ERROR": "Arithmetic or formula error in a calculation.",
+    "F-TRADEOFF-MISSING": "Gave a mechanism without its cost/benefit trade-off.",
+    "F-OVERCONFIDENT": "Wrong at confidence 3.",
+    "F-LUCKY-GUESS": "Right at confidence 1 (unreliable knowledge).",
+    "F-SCOPE-SHALLOW": "Right headline, missed the key mechanism when asked to go deeper.",
+    "F-HAZARD-ERROR": "Misidentified a pipeline hazard or wrong stall/forwarding count.",
+    "F-CACHE-ADDR-ERROR": "Wrong tag/index/offset split or set count (verified by archcalc).",
+    "F-AMAT-ERROR": "AMAT/CPI formula misuse (e.g. forgot miss-rate global vs local, or hit time).",
+    "F-AMDAHL-ERROR": "Amdahl's law misapplied.",
+    "F-COHERENCE-STATE-ERROR": "Wrong MESI state transition or bus action.",
+    "F-CONSISTENCY-CONFUSION": "Confused coherence with consistency or misjudged a litmus outcome.",
+    "F-PREDICTOR-TRACE-ERROR": "Wrong branch-predictor state trace.",
+    "F-LOCALITY-MISSED": "Missed spatial/temporal locality effect in a code example.",
+    "F-UNITS-ERROR": "Cycles vs seconds / bytes vs bits / KB vs KiB slip."
+  },
+  "x_fields": {
+    "qid": "Stable question id (matches item.ref).",
+    "topic": "Primary taxonomy tag.",
+    "format": "mcq | short | trace | calc | oral",
+    "misconception": "The specific wrong belief revealed (empty if correct).",
+    "confidence": "1-3 self-reported.",
+    "key_points_hit": "Number of must-have points matched.",
+    "key_points_total": "Number of must-have points in the key.",
+    "source": "Source tag of the key.",
+    "calc_verified": "true/false: key computed with scripts/archcalc.py.",
+    "level_of_stack": "ISA | microarchitecture | memory-system | multicore."
+  },
+  "item_ref_format": "arch-<topic>-<short-slug>",
+  "items_note": "question text, key, justification, archcalc commands used",
+  "rubric_body": "| Format | Correct means |\n|--------|---------------|\n| mcq | exact option |\n| short | all must-have key points present; nice-to-haves only affect the debrief |\n| trace/calc | final value AND intermediate steps match the key (right answer from wrong steps = partial) |\n| oral | each chained follow-up graded separately; outcome = worst of the core points |\n\nConfidence modifies reporting: wrong@3 → record `F-OVERCONFIDENT` with the misconception; right@1 → `partial` + `F-LUCKY-GUESS`.",
+  "outcome_rule": "- **pass**: all must-have points correct, confidence ≥2.\n- **partial**: some must-have points, or correct at confidence 1, or right answer from flawed steps.\n- **fail**: wrong, or none of the must-haves.",
+  "loop_extra": "\n### Quiz specifics\n- Batch: default `n=5` questions per round (mock: 8 chained oral-style questions with follow-ups). Present all, numbered, with *confidence 1-3* requested per answer (1 guess, 2 fairly sure, 3 certain).\n- Grade each against its key; a correct answer at confidence 1 is `partial` (lucky), a wrong answer at confidence 3 is the most important flaw (record the misconception).\n- Debrief per question: key, 1-line why, the misconception it targets. Then 2-line pattern summary.\n- Remember: **one episode per question** (append a JSON list in a single call), `item.ref` = `<domain>-<topic>-<slug>`, plus one `note` for the weakest cluster.\n- Numeric items (AMAT, CPI, cache address split, Amdahl, pipeline timing, branch penalty): compute the key with `python3 scripts/archcalc.py ...` (relative to this skill's directory) and state all assumptions (forwarding, perfect/real prediction, inclusive/exclusive caches) in the question.\n",
+  "gate_extra": [
+    "Pipeline and coherence traces: simulate the sequence cycle by cycle (or state by state) in a script or table before presenting; state ISA/pipeline assumptions explicitly.",
+    "Memory-model litmus tests: name the model (SC, x86-TSO, ARMv8) and the allowed/forbidden outcome per its published definition; skip the item if unsure."
+  ]
+}

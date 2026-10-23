@@ -1,0 +1,101 @@
+{
+  "id": "os",
+  "title": "Operating Systems",
+  "kind": "knowledge",
+  "flags": [
+    "--os"
+  ],
+  "triggers": [
+    "operating system",
+    "os quiz",
+    "process",
+    "thread",
+    "deadlock",
+    "scheduling",
+    "virtual memory",
+    "paging",
+    "semaphore",
+    "mutex",
+    "context switch",
+    "file system",
+    "syscall",
+    "race condition"
+  ],
+  "scope_in": "Interview-level OS: processes/threads, scheduling, synchronization, deadlocks, memory management and paging, TLB, file systems, I/O, IPC, syscalls, Linux practicalities, virtualization/containers basics.",
+  "scope_out": "Kernel source-level trivia, vendor-specific behaviour without a stated version, networking (prep-net if added), distributed systems (prep-hld).",
+  "modes": [
+    {
+      "id": "quiz",
+      "input": "difficulty, optional topic, n",
+      "output": "n keyed questions (MCQ/short/trace/calc) with confidence capture and per-question debrief"
+    },
+    {
+      "id": "explain",
+      "input": "concept",
+      "output": "tight explanation: definition, why it exists, mechanism, trade-offs, 2 interview-style follow-ups with answers"
+    },
+    {
+      "id": "review",
+      "input": "none or topic",
+      "output": "resurface missed/low-confidence questions via spaced repetition with fresh variants"
+    },
+    {
+      "id": "mock",
+      "input": "time box",
+      "output": "oral-style interviewer: chained questions that dig deeper on each answer"
+    }
+  ],
+  "default_mode": "quiz",
+  "default_difficulty": 2,
+  "ladder": [
+    "Recall: process vs thread, what a syscall is, stack vs heap, definition of deadlock.",
+    "Mechanism: round-robin trace, mutex vs semaphore, what a page fault does, why context switches cost.",
+    "Applied: Banker's algorithm step, page-replacement trace (FIFO/LRU/Belady), effective access time with TLB, priority inversion, producer-consumer correctness.",
+    "Deep: copy-on-write/fork internals, TLB shootdowns, memory-ordering/atomics reasoning, lock-free pitfalls, scheduler fairness (CFS), I/O scheduling.",
+    "Expert: design questions on kernel mechanisms (build a user-space scheduler, debug a livelock from a trace, NUMA/huge pages trade-offs, io_uring vs epoll)."
+  ],
+  "topics": [
+    "processes-threads",
+    "scheduling",
+    "synchronization",
+    "deadlock",
+    "memory-management",
+    "virtual-memory-paging",
+    "page-replacement",
+    "tlb-caching",
+    "file-systems",
+    "io-disk",
+    "ipc",
+    "syscalls-kernel",
+    "concurrency-bugs",
+    "virtualization-containers",
+    "linux-practical"
+  ],
+  "flaws": {
+    "F-CONCEPT-CONFUSION": "Mixed up two related concepts (e.g. mutex/semaphore, process/thread, paging/segmentation).",
+    "F-DEF-WRONG": "Incorrect or imprecise definition.",
+    "F-CALC-ERROR": "Arithmetic or formula error in a calculation (EAT, page table size, address split).",
+    "F-TRACE-ERROR": "Wrong execution trace (scheduling Gantt, page-replacement, semaphore ordering).",
+    "F-RACE-MISSED": "Failed to see a race condition or missing memory barrier/atomicity.",
+    "F-DEADLOCK-CONDITIONS": "Wrong Coffman conditions or wrong prevention/avoidance/detection reasoning.",
+    "F-TRADEOFF-MISSING": "Gave a mechanism without its cost/benefit trade-off.",
+    "F-OVERCONFIDENT": "Wrong at confidence 3.",
+    "F-LUCKY-GUESS": "Right at confidence 1 (unreliable knowledge).",
+    "F-SCOPE-SHALLOW": "Right headline, missed the key mechanism when asked to go deeper."
+  },
+  "x_fields": {
+    "qid": "Stable question id (matches item.ref).",
+    "topic": "Primary taxonomy tag.",
+    "format": "mcq | short | trace | calc | oral",
+    "misconception": "The specific wrong belief revealed (empty if correct).",
+    "confidence": "1-3 self-reported.",
+    "key_points_hit": "Number of must-have points matched.",
+    "key_points_total": "Number of must-have points in the key.",
+    "source": "Source tag of the key (textbook chapter, man page, etc.)."
+  },
+  "item_ref_format": "os-<topic>-<short-slug>",
+  "items_note": "question text, key, justification, source tag",
+  "rubric_body": "| Format | Correct means |\n|--------|---------------|\n| mcq | exact option |\n| short | all must-have key points present; nice-to-haves only raise the debrief note |\n| trace/calc | final value AND intermediate steps match the key (a right answer from wrong steps = partial) |\n| oral | each chained follow-up graded separately; outcome = worst of the core points |\n\nConfidence modifies reporting: wrong@3 → record `F-OVERCONFIDENT` with the misconception; right@1 → `partial` + `F-LUCKY-GUESS`.",
+  "outcome_rule": "- **pass**: all must-have points correct, confidence ≥2.\n- **partial**: some must-have points, or correct at confidence 1, or right answer from flawed steps.\n- **fail**: wrong, or none of the must-haves.",
+  "loop_extra": "\n### Quiz specifics\n- Batch: default `n=5` questions per round (mock: 8 chained oral-style questions with follow-ups). Present all, numbered, with *confidence 1-3* requested per answer (1 guess, 2 fairly sure, 3 certain).\n- Grade each against its key; a correct answer at confidence 1 is `partial` (lucky), a wrong answer at confidence 3 is the most important flaw (record the misconception).\n- Debrief per question: key, 1-line why, the misconception it targets. Then 2-line pattern summary.\n- Remember: **one episode per question** (append a JSON list in a single call), `item.ref` = `<domain>-<topic>-<slug>`, plus one `note` for the weakest cluster.\n- Calc/trace questions: compute the key with a short script/arithmetic before presenting (never mentally).\n"
+}

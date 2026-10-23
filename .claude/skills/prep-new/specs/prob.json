@@ -1,0 +1,115 @@
+{
+  "id": "prob",
+  "parent": "quant",
+  "title": "Quant Probability & Expectation",
+  "kind": "code",
+  "flags": [
+    "--prob",
+    "--quant.prob"
+  ],
+  "triggers": [
+    "probability",
+    "expected value",
+    "conditional probability",
+    "bayes",
+    "random variable",
+    "variance",
+    "markov chain",
+    "random walk",
+    "combinatorics",
+    "dice",
+    "coin flip",
+    "card game",
+    "stopping time",
+    "martingale",
+    "distribution"
+  ],
+  "scope_in": "Quant-interview probability: counting, conditioning/Bayes, linearity of expectation, symmetry, first-step recursion, Markov chains, random walks, martingales, order statistics, geometric probability, simple games and optimal stopping.",
+  "scope_out": "Advanced stochastic calculus (add a child domain), mental arithmetic (quant/mental-math), pure statistics/ML.",
+  "modes": [
+    {
+      "id": "problem",
+      "input": "difficulty, optional topic",
+      "output": "one verified problem; user answers with reasoning; exact answer + method graded"
+    },
+    {
+      "id": "quiz",
+      "input": "difficulty, topic, n",
+      "output": "n short numeric/fraction questions, all answers computed exactly"
+    },
+    {
+      "id": "explain",
+      "input": "technique",
+      "output": "technique, when it applies, 2 worked examples, the classic trap"
+    },
+    {
+      "id": "review",
+      "input": "none or topic",
+      "output": "spaced re-test of missed problems with changed parameters"
+    },
+    {
+      "id": "mock",
+      "input": "n problems, time box",
+      "output": "rapid-fire interviewer: problem, probe 'why?', variation, next"
+    }
+  ],
+  "default_mode": "problem",
+  "default_difficulty": 3,
+  "timed": true,
+  "ladder": [
+    "Direct computation: P(two heads in 3 flips), E[die roll], P(sum of two dice = 7).",
+    "One technique: Bayes with two urns, linearity (expected fixed points), simple conditional probabilities.",
+    "Standard quant screen: expected flips to get HH, gambler's ruin, coupon collector, Monty-Hall variants, symmetry arguments.",
+    "Strong: martingale/optional stopping (ABRACADABRA), random-walk hitting times, optimal stopping games, order statistics of uniforms.",
+    "Elite: multi-step puzzle needing a non-obvious state space or exact-vs-asymptotic reasoning (100 prisoners, Poisson thinning/merging, continuous-time Markov)."
+  ],
+  "topics": [
+    "counting-combinatorics",
+    "conditional-bayes",
+    "linearity-of-expectation",
+    "indicator-variables",
+    "symmetry",
+    "first-step-recursion",
+    "markov-chains",
+    "random-walks",
+    "martingales-stopping",
+    "order-statistics",
+    "geometric-probability",
+    "distributions-moments",
+    "dice-coins-cards",
+    "games-optimal-stopping",
+    "bounds-inequalities"
+  ],
+  "flaws": {
+    "F-PROB-DOUBLE-COUNT": "Counted outcomes twice or ignored ordering/indistinguishability.",
+    "F-PROB-INDEPENDENCE-ASSUMED": "Assumed independence that is not given.",
+    "F-PROB-CONDITIONING-SLIP": "Conditioned on the wrong event (boy-girl, Monty Hall style).",
+    "F-PROB-MISSED-LINEARITY": "Used a hard route when linearity of expectation sufficed.",
+    "F-PROB-MISSED-SYMMETRY": "Failed to exploit a symmetry argument.",
+    "F-PROB-BAD-STATE-SPACE": "Wrong or bloated state definition for a recursion/Markov chain.",
+    "F-PROB-NO-BOUNDARY": "Boundary/absorbing conditions wrong or missing.",
+    "F-PROB-NO-SANITY-CHECK": "No limiting-case / probabilities-sum-to-1 sanity check.",
+    "F-PROB-ARITH-ERROR": "Right method, arithmetic slip.",
+    "F-PROB-SLOW": "Correct but beyond the time target (when --timed).",
+    "F-PROB-NO-METHOD": "Guessed an answer with no derivation."
+  },
+  "x_fields": {
+    "method": "Technique the user used.",
+    "method_ideal": "Cleanest technique for this problem.",
+    "answer_given": "User's final answer.",
+    "answer_true": "Verified exact answer (fraction).",
+    "sanity_checks_done": "Checks the user performed.",
+    "time_s": "Seconds taken vs target.",
+    "target_s": "Interview target for this level."
+  },
+  "item_ref_format": "prob-<topic>-<short-slug>",
+  "items_note": "statement, exact answer, verification script, ideal solution",
+  "rubric_body": "| Dimension | Evidence |\n|-----------|----------|\n| Answer | exactly equals the verified fraction/value (not 'about') |\n| Method | valid derivation, ideally the clean technique |\n| Checks | boundary or limiting-case sanity checks |\n| Speed | within `target_s` when timed |\n\nAnswer correctness is decided by the verified value, never by plausibility.",
+  "outcome_rule": "- **pass**: exact answer, valid method, ≤1 hint (tier ≤2), within time if timed.\n- **partial**: right answer with weak/absent derivation, tier ≥3 hint, over time; or right method with an arithmetic slip.\n- **fail**: wrong answer with wrong method, or gave up.\n\nTime targets (timed): L1 1m, L2 3m, L3 5m, L4 8m, L5 12m.",
+  "gate_extra": [
+    "Compute the answer exactly with Python `fractions.Fraction` (enumeration, DP, or linear system) AND independently by Monte Carlo (≥1e6 trials, within 4 standard errors) before presenting; present only if they agree. Never trust a remembered 'known answer'.",
+    "Check the statement is unambiguous (independence, replacement, fairness, stopping rule, what 'expected' is over). Ambiguous → rewrite.",
+    "State the answer as an exact fraction/closed form plus decimal."
+  ],
+  "loop_extra": "\n### Prob specifics\nPresent the problem, ask for answer + one-line method. Hints: nudge = name a technique family; pattern = state variable/event to define; skeleton = set up the equations; solution = full. For `quiz` batch items, no derivation required but record `method`."
+}

@@ -1,0 +1,359 @@
+{
+  "version": 1,
+  "domains": [
+    {
+      "id": "quant",
+      "skill": "prep-quant",
+      "path": "prep-quant",
+      "kind": "router",
+      "flags": [
+        "--quant"
+      ],
+      "triggers": [
+        "quant",
+        "quantitative",
+        "jane street",
+        "citadel",
+        "hrt",
+        "optiver",
+        "market making",
+        "trading interview"
+      ],
+      "children": "prep-quant/registry.json"
+    },
+    {
+      "id": "dsa",
+      "skill": "prep-dsa",
+      "path": "prep-dsa",
+      "kind": "code",
+      "flags": [
+        "--dsa",
+        "--algo"
+      ],
+      "triggers": [
+        "dsa",
+        "leetcode",
+        "algorithm",
+        "data structure",
+        "array",
+        "string problem",
+        "linked list",
+        "binary tree",
+        "graph",
+        "dp",
+        "dynamic programming",
+        "two pointers",
+        "sliding window",
+        "binary search",
+        "heap",
+        "greedy",
+        "backtracking",
+        "time complexity",
+        "coding problem",
+        "coding question"
+      ],
+      "modes": [
+        "problem",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "problem",
+      "default_difficulty": 2
+    },
+    {
+      "id": "os",
+      "skill": "prep-os",
+      "path": "prep-os",
+      "kind": "knowledge",
+      "flags": [
+        "--os"
+      ],
+      "triggers": [
+        "operating system",
+        "os quiz",
+        "process",
+        "thread",
+        "deadlock",
+        "scheduling",
+        "virtual memory",
+        "paging",
+        "semaphore",
+        "mutex",
+        "context switch",
+        "file system",
+        "syscall",
+        "race condition"
+      ],
+      "modes": [
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "quiz",
+      "default_difficulty": 2
+    },
+    {
+      "id": "lld",
+      "skill": "prep-lld",
+      "path": "prep-lld",
+      "kind": "design",
+      "flags": [
+        "--lld",
+        "--oop"
+      ],
+      "triggers": [
+        "lld",
+        "low level design",
+        "object oriented design",
+        "class design",
+        "design pattern",
+        "solid",
+        "parking lot",
+        "design an elevator",
+        "uml",
+        "design a library system"
+      ],
+      "modes": [
+        "design",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "design",
+      "default_difficulty": 2
+    },
+    {
+      "id": "hld",
+      "skill": "prep-hld",
+      "path": "prep-hld",
+      "kind": "design",
+      "flags": [
+        "--hld",
+        "--sd"
+      ],
+      "triggers": [
+        "hld",
+        "high level design",
+        "system design",
+        "design twitter",
+        "design a url shortener",
+        "scalability",
+        "sharding",
+        "load balancer",
+        "caching",
+        "cap theorem",
+        "consistent hashing",
+        "message queue",
+        "back of the envelope",
+        "microservices"
+      ],
+      "modes": [
+        "design",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "design",
+      "default_difficulty": 3
+    },
+    {
+      "id": "behavioral",
+      "skill": "prep-behavioral",
+      "path": "prep-behavioral",
+      "kind": "design",
+      "flags": [
+        "--behavioral",
+        "--hr",
+        "--bq"
+      ],
+      "triggers": [
+        "behavioral",
+        "behavioural",
+        "star method",
+        "tell me about a time",
+        "leadership principles",
+        "conflict with",
+        "hr round",
+        "tell me about yourself",
+        "strengths and weaknesses"
+      ],
+      "modes": [
+        "mock",
+        "story",
+        "drill",
+        "review"
+      ],
+      "default_mode": "mock",
+      "default_difficulty": 2
+    },
+    {
+      "id": "db",
+      "skill": "prep-db",
+      "path": "prep-db",
+      "kind": "knowledge",
+      "flags": [
+        "--db",
+        "--dbms"
+      ],
+      "triggers": [
+        "dbms",
+        "database",
+        "sql",
+        "normalization",
+        "acid",
+        "isolation level",
+        "transaction",
+        "b+ tree",
+        "indexing",
+        "query optimization",
+        "mvcc",
+        "write ahead log",
+        "join",
+        "primary key",
+        "foreign key",
+        "denormalization",
+        "nosql"
+      ],
+      "modes": [
+        "quiz",
+        "sql",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "quiz",
+      "default_difficulty": 2
+    },
+    {
+      "id": "cn",
+      "skill": "prep-cn",
+      "path": "prep-cn",
+      "kind": "knowledge",
+      "flags": [
+        "--cn",
+        "--networks",
+        "--net"
+      ],
+      "triggers": [
+        "computer network",
+        "networking",
+        "tcp",
+        "udp",
+        "dns",
+        "http",
+        "osi model",
+        "three way handshake",
+        "congestion control",
+        "subnetting",
+        "subnet mask",
+        "routing protocol",
+        "tls handshake",
+        "ip address",
+        "arp",
+        "nat",
+        "bgp",
+        "ospf",
+        "cidr",
+        "packet loss"
+      ],
+      "modes": [
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "quiz",
+      "default_difficulty": 2
+    },
+    {
+      "id": "arch",
+      "skill": "prep-arch",
+      "path": "prep-arch",
+      "kind": "knowledge",
+      "flags": [
+        "--arch"
+      ],
+      "triggers": [
+        "computer architecture",
+        "cpu pipeline",
+        "pipelining",
+        "hazard",
+        "branch prediction",
+        "out of order execution",
+        "cache coherence",
+        "mesi",
+        "cache hit rate",
+        "amat",
+        "set associative",
+        "instruction set",
+        "risc",
+        "cisc",
+        "cpi",
+        "amdahl",
+        "superscalar",
+        "memory hierarchy",
+        "simd",
+        "memory consistency"
+      ],
+      "modes": [
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "quiz",
+      "default_difficulty": 2
+    },
+    {
+      "id": "cpp",
+      "skill": "prep-cpp",
+      "path": "prep-cpp",
+      "kind": "knowledge",
+      "flags": [
+        "--cpp"
+      ],
+      "triggers": [
+        "c++",
+        "cpp",
+        "c++20",
+        "c++17",
+        "c++11",
+        "raii",
+        "smart pointer",
+        "unique_ptr",
+        "shared_ptr",
+        "move semantics",
+        "rvalue",
+        "std::move",
+        "template",
+        "stl",
+        "undefined behavior",
+        "constexpr",
+        "lambda",
+        "virtual function",
+        "vtable",
+        "concepts",
+        "ranges",
+        "coroutine",
+        "perfect forwarding",
+        "copy elision",
+        "memory model"
+      ],
+      "modes": [
+        "quiz",
+        "predict",
+        "debug",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "quiz",
+      "default_difficulty": 2
+    }
+  ]
+}
