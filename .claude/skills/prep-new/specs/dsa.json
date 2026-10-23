@@ -1,0 +1,68 @@
+{
+  "id": "dsa", "title": "Data Structures & Algorithms (C++)", "kind": "code",
+  "flags": ["--dsa", "--algo"],
+  "triggers": ["dsa", "leetcode", "algorithm", "data structure", "array", "string problem", "linked list", "binary tree", "graph", "dp", "dynamic programming", "two pointers", "sliding window", "binary search", "heap", "greedy", "backtracking", "time complexity", "coding problem", "coding question"],
+  "scope_in": "Coding-interview algorithm problems solved in C++20: arrays, strings, hashing, trees, graphs, DP, greedy, heaps, intervals, bit tricks, number theory; complexity analysis; STL pitfalls.",
+  "scope_out": "System design (prep-hld/prep-lld), language trivia unrelated to solving problems, non-C++ solutions (translate on request but judge only C++).",
+  "modes": [
+    {"id": "problem", "input": "difficulty, optional topic", "output": "one verified problem; judge the user's C++ against the harness"},
+    {"id": "quiz", "input": "difficulty, topic", "output": "rapid conceptual questions (complexity, invariants, STL behaviour), each checked by a runnable snippet when behavioural"},
+    {"id": "explain", "input": "pattern/algorithm name", "output": "concise explanation: invariant, template code in C++, when it fails, 2 canonical problems"},
+    {"id": "review", "input": "none or topic", "output": "resurface due/failed items from memory (spaced repetition), re-judge a fresh attempt"},
+    {"id": "mock", "input": "number of problems (default 2), time box", "output": "interviewer simulation: statement only, clarifying questions answered tersely, time tracked, full debrief at end"}
+  ],
+  "default_mode": "problem", "default_difficulty": 2, "timed": true,
+  "ladder": [
+    "Warm-up, one idea: Two Sum, Valid Parentheses, Reverse Linked List, Best Time to Buy/Sell Stock.",
+    "Standard screen: sliding window (fixed/variable), BFS on grid, binary search on sorted array, prefix sums, hash-map counting, simple tree DFS.",
+    "On-site medium: LRU cache, topological sort, binary search on answer, 2D/knapsack DP, union-find, monotonic stack, Dijkstra on small graphs.",
+    "Strong on-site / top firm: segment tree or Fenwick, bitmask DP, DP optimisation, trie+DFS, graph with state (BFS on states), tricky greedy with proof.",
+    "Elite: Codeforces ~1900-2300 style, multi-insight (offline queries, divide and conquer, SCC/bridges, convex-hull trick, heavy edge-case design)."
+  ],
+  "topics": ["arrays", "hashing", "two-pointers", "sliding-window", "binary-search", "prefix-sums", "stack-monotonic", "linked-list", "trees", "bst", "heap", "graph-bfs-dfs", "shortest-path", "dsu", "topo-sort", "dp-1d", "dp-2d", "dp-knapsack", "dp-bitmask", "greedy", "intervals", "backtracking", "strings", "trie", "bit-manipulation", "number-theory", "segment-tree-fenwick", "recursion"],
+  "flaws": {
+    "F-NO-PLAN": "Started coding before restating the problem / working an example / choosing an approach.",
+    "F-BRUTE-SKIPPED": "Did not state a brute force and its complexity before optimising.",
+    "F-WRONG-PATTERN": "Chose a technique that does not fit the constraints or structure.",
+    "F-GREEDY-UNPROVEN": "Greedy choice without exchange argument or counter-example search.",
+    "F-COMPLEXITY-NOT-ANALYSED": "Did not state time/space complexity or got it wrong.",
+    "F-EDGE-CASE": "Failed an empty/single/extreme input (harness-detected on edge or n<=1 case).",
+    "F-OFF-BY-ONE": "Boundary/index off by one (loop bounds, half-open ranges).",
+    "F-DUP-HANDLING": "Duplicates / ties mishandled.",
+    "F-STATE-NOT-RESET": "Global or loop state carried across test cases / iterations.",
+    "F-WA-LOGIC": "Wrong answer from a logic error (harness-detected).",
+    "F-TLE-COMPLEXITY": "Correct but too slow at max constraints (harness-detected).",
+    "F-INT-OVERFLOW": "int overflow where long long needed (UBSan-detected).",
+    "F-OOB": "Out-of-bounds access (ASan/UBSan-detected).",
+    "F-UNINIT": "Uninitialised variable (-Wall warning).",
+    "F-NULL": "Null dereference.",
+    "F-LIFETIME": "Use-after-free / dangling reference (e.g. invalidated iterator or reference).",
+    "F-DIV-ZERO": "Division or modulo by zero.",
+    "F-UB-SHIFT": "Undefined shift (width, negative).",
+    "F-RECURSION-DEPTH": "Stack overflow from deep recursion (needs iteration or explicit stack).",
+    "F-RE-CRASH": "Runtime crash not otherwise classified.",
+    "F-STL-MISUSE": "STL pitfall: map::operator[] inserting, erase-while-iterating, comparator not strict weak order, vector<bool> quirks.",
+    "F-DEBUG-FLAIL": "Changed code at random after a failure instead of reproducing on a minimal case."
+  },
+  "x_fields": {
+    "pattern": "Technique that actually solves it (e.g. 'sliding-window/variable').",
+    "pattern_chosen": "Technique the user first attempted, if different.",
+    "complexity_claimed": "User's stated time/space, e.g. 'O(n log n) / O(n)'.",
+    "complexity_actual": "Actual complexity of their final solution.",
+    "brute_to_optimal": "One line: how (or whether) they moved from brute force to the optimal idea.",
+    "verdict": "Harness verdict of final submission: AC/WA/TLE/RE/SAN/CE.",
+    "attempts": "Number of submissions before AC or give-up.",
+    "tests_failed": "First failing case label (e.g. 'edge/single_negative.in').",
+    "ai_hint_tier_max": "Highest hint tier used (0-4)."
+  },
+  "item_ref_format": "dsa-<topic>-<short-title-slug>",
+  "items_note": "the whole problem dir: statement.md, ref/brute/gen/edge/meta, plus the user's last solution",
+  "rubric_body": "## Verdict-driven (the harness decides correctness; never judge by reading)\n\n| Dimension | Evidence |\n|-----------|----------|\n| Correctness | `judge.py judge` verdict AC (also passes ASan/UBSan) |\n| Efficiency | passes large cases within `tl_s`; stated complexity matches `complexity_actual` |\n| Process | restated problem, worked an example, named brute force then optimised, tested edge cases before submitting |\n| Code quality | readable, no UB warnings, sensible STL use |\n\nProcess flaws (F-NO-PLAN, F-BRUTE-SKIPPED, F-COMPLEXITY-NOT-ANALYSED, F-DEBUG-FLAIL) are judged from the conversation transcript and logged even when the verdict is AC.",
+  "outcome_rule": "- **pass**: verdict AC AND ≤1 hint (tier ≤2) AND stated complexity correct.\n- **partial**: AC with a tier ≥3 hint or wrong/missing complexity analysis, OR a correct-but-slow solution (TLE) with the right idea.\n- **fail**: WA/RE/SAN/CE not fixed by session end, wrong approach, or gave up.",
+  "loop_extra": "\n### DSA specifics\nAll paths relative to this skill's directory. Work in the scratchpad, e.g. `P=<scratchpad>/dsa/<ref>`.\n1. **Generate** — write `$P/{statement.md,ref.cpp,brute.cpp,gen.cpp,edge/*.in,meta.json}` per `harness/judge.py` docstring. `gen.cpp <seed> <n>` must be deterministic; use tiny value ranges on small cases to force ties/negatives and full range on large cases. Choose `large_n`/`tl_s` so the intended solution passes and the brute force does not.\n2. **Verify** — `python3 harness/judge.py verify $P`. Exit 0 required (it checks ref==brute on edge+200 small cases under sanitizers, ref speed, and that brute fails the limit). On failure read `stage`/`detail`, fix, retry (max 3), else tell the user and fall back to a different problem. Pass `--allow-fast-brute` only at level 1.\n3. **Present** — print `statement.md` only (plus time box if `--timed`: L1 15m, L2 25m, L3 35m, L4 45m, L5 60m).\n4. **Interact** — before accepting code, ask once (unprompted only if they jump straight to code): approach + complexity. When the user submits code, save to `$P/sol.cpp` and run `python3 harness/judge.py judge $P $P/sol.cpp`. Report verdict + `case` + the minimal failing `input` + `flaws`; do NOT reveal the reference solution. Resubmissions count as `attempts`.\n5. **Debrief** — show a clean reference approach (from `ref.cpp`), the key insight, and map every harness `flaws` entry plus process flaws to taxonomy codes.\n6. **Remember** — `save-item` the whole `$P` (exclude `.build`), then `append` with `x` per schema.\n\n**Quiz/explain** items about behaviour (complexity, iterator invalidation, UB) must be confirmed by compiling and running a tiny C++ snippet before they are asked.\n**Mock**: no hints unless the user asks; clarify requirements tersely like an interviewer; evaluate both process and code; fan-out generation for the n problems may use parallel subagents.",
+  "gate_extra": [
+    "Harness is mandatory: `python3 harness/judge.py verify <dir>` must exit 0 before the statement is shown. `python3 harness/judge.py selftest` proves the harness itself (run it if a verdict looks suspicious).",
+    "Language is C++20 (`g++ -std=c++20 -O2`); the same solution is also built with `-fsanitize=address,undefined` — UB that 'works' still counts as a flaw.",
+    "Dedupe: skip any `item.ref` already in memory (`MEM seen dsa <ref>`) unless in review mode; refs follow `dsa-<topic>-<slug>`."
+  ]
+}

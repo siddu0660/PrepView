@@ -228,7 +228,7 @@ def main(a):
         dst = os.path.join(d(key), "items", a[2])
         shutil.rmtree(dst, ignore_errors=True)
         if os.path.isdir(a[3]):
-            shutil.copytree(a[3], dst)
+            shutil.copytree(a[3], dst, ignore=shutil.ignore_patterns(".build", ".pch", "__pycache__"))
         else:
             os.makedirs(os.path.dirname(dst), exist_ok=True); shutil.copy(a[3], dst)
     elif cmd == "due":

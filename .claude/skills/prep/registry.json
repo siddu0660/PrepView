@@ -2,45 +2,194 @@
   "version": 1,
   "domains": [
     {
-      "id": "dsa", "skill": "prep-dsa", "path": "prep-dsa", "kind": "code",
-      "flags": ["--dsa", "--algo"],
-      "triggers": ["dsa", "leetcode", "algorithm", "data structure", "array", "string problem", "linked list", "binary tree", "graph", "dp", "dynamic programming", "two pointers", "sliding window", "binary search", "heap", "greedy", "backtracking", "time complexity", "coding problem", "coding question"],
-      "modes": ["problem", "quiz", "explain", "review", "mock"],
-      "default_mode": "problem", "default_difficulty": 2
+      "id": "os",
+      "skill": "prep-os",
+      "path": "prep-os",
+      "kind": "knowledge",
+      "flags": [
+        "--os"
+      ],
+      "triggers": [
+        "operating system",
+        "os quiz",
+        "process",
+        "thread",
+        "deadlock",
+        "scheduling",
+        "virtual memory",
+        "paging",
+        "semaphore",
+        "mutex",
+        "context switch",
+        "file system",
+        "syscall",
+        "race condition"
+      ],
+      "modes": [
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "quiz",
+      "default_difficulty": 2
     },
     {
-      "id": "os", "skill": "prep-os", "path": "prep-os", "kind": "knowledge",
-      "flags": ["--os"],
-      "triggers": ["operating system", "os quiz", "process", "thread", "deadlock", "scheduling", "virtual memory", "paging", "semaphore", "mutex", "context switch", "file system", "syscall", "race condition"],
-      "modes": ["quiz", "explain", "review", "mock"],
-      "default_mode": "quiz", "default_difficulty": 2
+      "id": "lld",
+      "skill": "prep-lld",
+      "path": "prep-lld",
+      "kind": "design",
+      "flags": [
+        "--lld",
+        "--oop"
+      ],
+      "triggers": [
+        "lld",
+        "low level design",
+        "object oriented design",
+        "class design",
+        "design pattern",
+        "solid",
+        "parking lot",
+        "design an elevator",
+        "uml",
+        "design a library system"
+      ],
+      "modes": [
+        "design",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "design",
+      "default_difficulty": 2
     },
     {
-      "id": "lld", "skill": "prep-lld", "path": "prep-lld", "kind": "design",
-      "flags": ["--lld", "--oop"],
-      "triggers": ["lld", "low level design", "object oriented design", "class design", "design pattern", "solid", "parking lot", "design an elevator", "uml", "design a library system"],
-      "modes": ["design", "quiz", "explain", "review", "mock"],
-      "default_mode": "design", "default_difficulty": 2
+      "id": "hld",
+      "skill": "prep-hld",
+      "path": "prep-hld",
+      "kind": "design",
+      "flags": [
+        "--hld",
+        "--sd"
+      ],
+      "triggers": [
+        "hld",
+        "high level design",
+        "system design",
+        "design twitter",
+        "design a url shortener",
+        "scalability",
+        "sharding",
+        "load balancer",
+        "caching",
+        "cap theorem",
+        "consistent hashing",
+        "message queue",
+        "back of the envelope",
+        "microservices"
+      ],
+      "modes": [
+        "design",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "design",
+      "default_difficulty": 3
     },
     {
-      "id": "hld", "skill": "prep-hld", "path": "prep-hld", "kind": "design",
-      "flags": ["--hld", "--sd"],
-      "triggers": ["hld", "high level design", "system design", "design twitter", "design a url shortener", "scalability", "sharding", "load balancer", "caching", "cap theorem", "consistent hashing", "message queue", "back of the envelope", "microservices"],
-      "modes": ["design", "quiz", "explain", "review", "mock"],
-      "default_mode": "design", "default_difficulty": 3
+      "id": "behavioral",
+      "skill": "prep-behavioral",
+      "path": "prep-behavioral",
+      "kind": "design",
+      "flags": [
+        "--behavioral",
+        "--hr",
+        "--bq"
+      ],
+      "triggers": [
+        "behavioral",
+        "behavioural",
+        "star method",
+        "tell me about a time",
+        "leadership principles",
+        "conflict with",
+        "hr round",
+        "tell me about yourself",
+        "strengths and weaknesses"
+      ],
+      "modes": [
+        "design",
+        "quiz",
+        "review",
+        "mock"
+      ],
+      "default_mode": "mock",
+      "default_difficulty": 2
     },
     {
-      "id": "behavioral", "skill": "prep-behavioral", "path": "prep-behavioral", "kind": "design",
-      "flags": ["--behavioral", "--hr", "--bq"],
-      "triggers": ["behavioral", "behavioural", "star method", "tell me about a time", "leadership principles", "conflict with", "hr round", "tell me about yourself", "strengths and weaknesses"],
-      "modes": ["design", "quiz", "review", "mock"],
-      "default_mode": "mock", "default_difficulty": 2
-    },
-    {
-      "id": "quant", "skill": "prep-quant", "path": "prep-quant", "kind": "router",
-      "flags": ["--quant"],
-      "triggers": ["quant", "quantitative", "jane street", "citadel", "hrt", "optiver", "market making", "trading interview"],
+      "id": "quant",
+      "skill": "prep-quant",
+      "path": "prep-quant",
+      "kind": "router",
+      "flags": [
+        "--quant"
+      ],
+      "triggers": [
+        "quant",
+        "quantitative",
+        "jane street",
+        "citadel",
+        "hrt",
+        "optiver",
+        "market making",
+        "trading interview"
+      ],
       "children": "prep-quant/registry.json"
+    },
+    {
+      "id": "dsa",
+      "skill": "prep-dsa",
+      "path": "prep-dsa",
+      "kind": "code",
+      "flags": [
+        "--dsa",
+        "--algo"
+      ],
+      "triggers": [
+        "dsa",
+        "leetcode",
+        "algorithm",
+        "data structure",
+        "array",
+        "string problem",
+        "linked list",
+        "binary tree",
+        "graph",
+        "dp",
+        "dynamic programming",
+        "two pointers",
+        "sliding window",
+        "binary search",
+        "heap",
+        "greedy",
+        "backtracking",
+        "time complexity",
+        "coding problem",
+        "coding question"
+      ],
+      "modes": [
+        "problem",
+        "quiz",
+        "explain",
+        "review",
+        "mock"
+      ],
+      "default_mode": "problem",
+      "default_difficulty": 2
     }
   ]
 }
