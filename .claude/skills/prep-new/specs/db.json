@@ -1,0 +1,126 @@
+{
+  "id": "db",
+  "title": "Databases (DBMS)",
+  "kind": "knowledge",
+  "flags": [
+    "--db",
+    "--dbms"
+  ],
+  "triggers": [
+    "dbms",
+    "database",
+    "sql",
+    "normalization",
+    "acid",
+    "isolation level",
+    "transaction",
+    "b+ tree",
+    "indexing",
+    "query optimization",
+    "mvcc",
+    "write ahead log",
+    "join",
+    "primary key",
+    "foreign key",
+    "denormalization",
+    "nosql"
+  ],
+  "scope_in": "Interview-level DBMS: relational model, SQL (queries, joins, windows, aggregation), normalization, indexing and B+ trees, query planning, transactions/ACID, isolation levels and anomalies, locking/MVCC, recovery (WAL), storage engines, replication/partitioning basics, SQL vs NoSQL trade-offs.",
+  "scope_out": "Vendor administration, distributed-systems design at scale (prep-hld), ORM specifics.",
+  "modes": [
+    {
+      "id": "quiz",
+      "input": "difficulty, optional topic, n",
+      "output": "n keyed questions (MCQ/short/trace/calc) with confidence capture"
+    },
+    {
+      "id": "sql",
+      "input": "difficulty, optional topic",
+      "output": "a schema + task; your SQL is executed on SQLite and compared with the reference result set"
+    },
+    {
+      "id": "explain",
+      "input": "concept",
+      "output": "definition, mechanism, anomalies/trade-offs, 2 interview follow-ups with answers"
+    },
+    {
+      "id": "review",
+      "input": "none or topic",
+      "output": "spaced repetition of missed questions/queries as fresh variants"
+    },
+    {
+      "id": "mock",
+      "input": "time box",
+      "output": "oral interviewer: chained DBMS questions that drill into each answer"
+    }
+  ],
+  "default_mode": "quiz",
+  "default_difficulty": 2,
+  "ladder": [
+    "Recall: PK vs unique, what ACID stands for, inner vs left join, what an index is.",
+    "Mechanism: 1NF-3NF with a given table, GROUP BY/HAVING, why indexes slow writes, dirty vs non-repeatable read.",
+    "Applied: BCNF decomposition with FDs, window functions, composite index column order, deadlock between two transactions, choose isolation level for a scenario.",
+    "Deep: B+ tree height/IO calc, MVCC visibility and write skew, WAL/ARIES redo-undo, query plan reading (nested loop vs hash join), covering indexes.",
+    "Expert: serializable snapshot isolation, phantom prevention, optimizer cardinality estimation errors, designing indexes for a workload, replication lag anomalies."
+  ],
+  "topics": [
+    "relational-model",
+    "sql-queries",
+    "joins-aggregation",
+    "window-functions",
+    "normalization",
+    "indexing-btree",
+    "query-optimization",
+    "transactions-acid",
+    "isolation-anomalies",
+    "locking-2pl",
+    "mvcc",
+    "recovery-wal",
+    "storage-engines",
+    "replication-partitioning",
+    "nosql-vs-sql"
+  ],
+  "flaws": {
+    "F-CONCEPT-CONFUSION": "Mixed up two related concepts.",
+    "F-DEF-WRONG": "Incorrect or imprecise definition.",
+    "F-CALC-ERROR": "Arithmetic or formula error in a calculation.",
+    "F-TRADEOFF-MISSING": "Gave a mechanism without its cost/benefit trade-off.",
+    "F-OVERCONFIDENT": "Wrong at confidence 3.",
+    "F-LUCKY-GUESS": "Right at confidence 1 (unreliable knowledge).",
+    "F-SCOPE-SHALLOW": "Right headline, missed the key mechanism when asked to go deeper.",
+    "F-NORMAL-FORM-ERROR": "Wrong normal form, missed functional dependency, or bad decomposition.",
+    "F-ANOMALY-CONFUSION": "Confused isolation anomalies (dirty/non-repeatable/phantom/write skew) or what each level prevents.",
+    "F-INDEX-MISUSE": "Index choice/order wrong; ignored selectivity, write cost or covering.",
+    "F-SQL-SYNTAX": "Query does not parse/run (harness-detected).",
+    "F-SQL-WRONG-LOGIC": "Query runs but returns wrong rows (harness-detected).",
+    "F-SQL-MISSING-ROWS": "Fewer rows than expected (e.g. inner join dropping NULL side, wrong filter).",
+    "F-SQL-DUPLICATES-OR-JOIN-FANOUT": "Too many rows: join fan-out, missing DISTINCT/GROUP BY.",
+    "F-SQL-WRONG-COLUMNS": "Right rows, wrong columns/aggregation.",
+    "F-SQL-NULL-SEMANTICS": "NULL handling error (= NULL, NOT IN with NULL, COUNT(col) vs COUNT(*)).",
+    "F-ACID-CONFUSION": "Misstated what A/C/I/D guarantee.",
+    "F-PLAN-MISREAD": "Misread a query plan (scan vs seek, join type)."
+  },
+  "x_fields": {
+    "qid": "Stable question id (matches item.ref).",
+    "topic": "Primary taxonomy tag.",
+    "format": "mcq | short | trace | calc | oral",
+    "misconception": "The specific wrong belief revealed (empty if correct).",
+    "confidence": "1-3 self-reported.",
+    "key_points_hit": "Number of must-have points matched.",
+    "key_points_total": "Number of must-have points in the key.",
+    "source": "Source tag of the key.",
+    "anomaly": "Isolation anomaly involved, if any.",
+    "isolation_level": "Level discussed, if any.",
+    "sql_verdict": "AC/WA/ERR for sql mode.",
+    "plan_checked": "true/false: user examined EXPLAIN output."
+  },
+  "item_ref_format": "db-<topic>-<short-slug>",
+  "items_note": "question/key, or schema.sql + reference.sql for sql mode",
+  "rubric_body": "| Format | Correct means |\n|--------|---------------|\n| mcq | exact option |\n| short | all must-have key points present; nice-to-haves only affect the debrief |\n| trace/calc | final value AND intermediate steps match the key (right answer from wrong steps = partial) |\n| oral | each chained follow-up graded separately; outcome = worst of the core points |\n\nConfidence modifies reporting: wrong@3 → record `F-OVERCONFIDENT` with the misconception; right@1 → `partial` + `F-LUCKY-GUESS`.\n\n**sql mode:** correctness is decided only by `scripts/sqlcheck.py compare` (multiset equality of result rows; `--ordered` when ORDER BY is part of the task). Style (readability, avoiding SELECT *, sargable predicates) is commented on but never changes the verdict.",
+  "outcome_rule": "- **pass**: all must-have points correct, confidence ≥2.\n- **partial**: some must-have points, or correct at confidence 1, or right answer from flawed steps.\n- **fail**: wrong, or none of the must-haves.\n- **sql mode:** pass = AC with ≤1 hint; partial = AC after a tier ≥3 hint or after 3+ attempts; fail = ERR/WA at the end.",
+  "loop_extra": "\n### Quiz specifics\n- Batch: default `n=5` questions per round (mock: 8 chained oral-style questions with follow-ups). Present all, numbered, with *confidence 1-3* requested per answer (1 guess, 2 fairly sure, 3 certain).\n- Grade each against its key; a correct answer at confidence 1 is `partial` (lucky), a wrong answer at confidence 3 is the most important flaw (record the misconception).\n- Debrief per question: key, 1-line why, the misconception it targets. Then 2-line pattern summary.\n- Remember: **one episode per question** (append a JSON list in a single call), `item.ref` = `<domain>-<topic>-<slug>`, plus one `note` for the weakest cluster.\n\n### SQL mode\nAll paths relative to this skill's directory; work in the scratchpad `P`.\n1. Write `$P/schema.sql` (CREATE + INSERT; ≥8 rows with NULLs, ties, duplicates and an empty-group case) and `$P/ref.sql`. Run `python3 scripts/sqlcheck.py run $P/schema.sql $P/ref.sql` and confirm the result matches your own reasoning for the hardest row.\n2. Present schema + task text only.\n3. Save the user's query to `$P/user.sql`; run `python3 scripts/sqlcheck.py compare $P/schema.sql $P/ref.sql $P/user.sql [--ordered]`. Show verdict, a few expected-vs-got rows and flaws; never show `ref.sql` before AC or give-up.\n4. Debrief with `python3 scripts/sqlcheck.py plan ...` for both queries when performance is a point.\n",
+  "gate_extra": [
+    "SQL items: the reference query is executed with `scripts/sqlcheck.py` on SQLite and its result checked against a hand-derived expectation for the trickiest row before presenting. SQLite lacks some features (e.g. no RIGHT JOIN before 3.39, no stored procedures, weak types): state the dialect and avoid items that depend on engine-specific behaviour.",
+    "Isolation/locking questions must state the engine behaviour assumed (textbook definition vs PostgreSQL vs MySQL InnoDB) because real engines deviate from the SQL standard; never mix them silently."
+  ]
+}

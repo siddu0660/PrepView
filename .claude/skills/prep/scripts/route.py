@@ -17,7 +17,10 @@ MIN_MARGIN = 2     # lead over the runner-up required to route without asking
 
 DIFF_WORDS = [("beginner", 1), ("very hard", 5), ("expert", 5), ("easy", 2),
               ("medium", 3), ("hard", 4)]
-MODE_WORDS = [("quiz", ["quiz", "mcq", "test me", "questions on"]),
+MODE_WORDS = [("sql", ["write a query", "write sql", "sql query", "sql problem", "sql task"]),
+              ("predict", ["what does this print", "predict the output", "predict output", "output of this", "will this compile", "does this compile"]),
+              ("debug", ["spot the bug", "find the bug", "debug this", "fix the bug"]),
+              ("quiz", ["quiz", "mcq", "test me", "questions on"]),
               ("mock", ["mock", "simulate interview", "interview me"]),
               ("review", ["review", "revise", "revision", "recap"]),
               ("explain", ["explain", "clear", "teach", "understand", "what is", "how does"]),

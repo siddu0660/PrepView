@@ -5,6 +5,7 @@ routing   deterministic router cases (incl. ambiguous ones that MUST ask)
 memory    level state machine, dedupe, spaced repetition, batch/atomic append, notes cap
 scaffold  new domain from spec in a throw-away copy of the skill tree; collision + lint checks
 drill     mental-math generator/grader sanity
+helpers   sqlcheck / netcalc / archcalc ground truth (+ cppcheck unless --quick)
 harness   C++ judge selftest (compiles; ~25s)           [skipped with --quick]
 mutation  seeded-wrong problems the verifier MUST reject [skipped with --quick]
 """
@@ -44,6 +45,15 @@ ROUTING = [  # (args, expected memory_key | "ASK", expected mode or None, expect
     ("--quant.prob -d 5", "quant/prob", None, 5), ("bayes and conditional probability", "quant/prob", None, None),
     ("--mm -d 3 -n 20", "quant/mental-math", "drill", 3), ("mental math drill", "quant/mental-math", "drill", None),
     ("--quant.mm", "quant/mental-math", None, None),
+    ("--db", "db", "quiz", None), ("--dbms -d 4", "db", None, 4), ("explain mvcc and isolation levels", "db", "explain", None),
+    ("write a query with a window function and a join", "db", "sql", None), ("normalization to bcnf", "db", None, None),
+    ("--cn", "cn", "quiz", None), ("--net -d 3", "cn", None, 3), ("explain the tcp three way handshake", "cn", "explain", None),
+    ("subnetting and cidr practice", "cn", None, None), ("quiz me on dns and http", "cn", "quiz", None),
+    ("--arch", "arch", "quiz", None), ("cache coherence mesi quiz", "arch", "quiz", None), ("branch prediction and pipeline hazards", "arch", None, None),
+    ("amat and set associative cache", "arch", None, None),
+    ("--cpp", "cpp", "quiz", None), ("--cpp --mode predict", "cpp", "predict", None), ("move semantics and rvalue references", "cpp", None, None),
+    ("spot the bug in this c++ raii code", "cpp", "debug", None), ("explain c++20 concepts", "cpp", "explain", None),
+    ("what does this print undefined behavior vtable", "cpp", "predict", None),
     # must ask
     ("", "ASK", None, None), ("give me something", "ASK", None, None), ("practice", "ASK", None, None),
     ("design", "ASK", None, None), ("--quant", "ASK", None, None), ("--foo", "ASK", None, None),
@@ -150,7 +160,7 @@ def t_scaffold():
     try:
         sk = os.path.join(tmp, "skills"); shutil.copytree(SK, sk, ignore=shutil.ignore_patterns(".build", ".pch", "__pycache__"))
         spec = json.load(open(os.path.join(SK, "prep-new/specs/os.json")))
-        spec.update(id="netw", title="Networking", flags=["--net"], triggers=["tcp handshake", "udp", "dns", "http2", "congestion control", "subnet"])
+        spec.update(id="netw", title="Warp Physics", flags=["--zznet"], triggers=["flux capacitor", "warp drive", "dilithium", "tachyon", "quark soup", "antimatter"])
         spec["topics"] = ["tcp", "dns"]; sp = os.path.join(tmp, "netw.json"); json.dump(spec, open(sp, "w"))
         sc = [PY, os.path.join(sk, "prep-new/scripts/scaffold.py")]
         lint = [PY, os.path.join(sk, "prep/scripts/lint.py")]
@@ -160,9 +170,9 @@ def t_scaffold():
         check("scaffold: no placeholders left", "{{" not in open(os.path.join(sk, "prep-netw/SKILL.md")).read())
         check("scaffold: lint passes after add", run(lint).returncode == 0, run(lint).stdout)
         check("scaffold: memory not created in repo tree", not os.path.exists(os.path.join(sk, "prep-netw", "memory")))
-        r = json.loads(run([PY, os.path.join(sk, "prep/scripts/route.py"), "--net"]).stdout)
+        r = json.loads(run([PY, os.path.join(sk, "prep/scripts/route.py"), "--zznet"]).stdout)
         check("scaffold: new flag routes", r["memory_key"] == "netw", str(r))
-        r = json.loads(run([PY, os.path.join(sk, "prep/scripts/route.py"), "explain tcp handshake and congestion control"]).stdout)
+        r = json.loads(run([PY, os.path.join(sk, "prep/scripts/route.py"), "explain flux capacitor and warp drive"]).stdout)
         check("scaffold: new triggers route", r["memory_key"] == "netw", str(r["reason"]))
         check("scaffold: duplicate id refused", run(sc + [sp, "--skills-root", sk]).returncode == 1)
         spec2 = dict(spec, id="other"); json.dump(spec2, open(sp, "w"))
@@ -211,6 +221,52 @@ def t_drill():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+
+# ----------------------------------------------------------------------------- helpers (db / cn / arch / cpp)
+def t_helpers(quick=False):
+    tmp = tempfile.mkdtemp()
+    try:
+        w = lambda n, t: (open(os.path.join(tmp, n), "w").write(t), os.path.join(tmp, n))[1]
+        sk = lambda *p: os.path.join(SK, *p)
+        schema = w("s.sql", "CREATE TABLE e(id INTEGER PRIMARY KEY,d TEXT,s INT); INSERT INTO e VALUES(1,'x',100),(2,'x',200),(3,'y',150),(4,'y',150);")
+        ref = w("ref.sql", "SELECT d, MAX(s) FROM e GROUP BY d"); ok = w("ok.sql", "SELECT d, MAX(s) AS m FROM e GROUP BY 1")
+        bad = w("bad.sql", "SELECT d, s FROM e"); syn = w("syn.sql", "SELEC")
+        sq = [PY, sk("prep-db/scripts/sqlcheck.py")]
+        check("sql: equivalent query AC", json.loads(run(sq + ["compare", schema, ref, ok]).stdout)["verdict"] == "AC")
+        r = run(sq + ["compare", schema, ref, bad]); check("sql: wrong query WA, nonzero exit", json.loads(r.stdout)["verdict"] == "WA" and r.returncode == 1)
+        check("sql: syntax error ERR", json.loads(run(sq + ["compare", schema, ref, syn]).stdout)["verdict"] == "ERR")
+        ordq = w("o1.sql", "SELECT id FROM e ORDER BY id"); ordr = w("o2.sql", "SELECT id FROM e ORDER BY id DESC")
+        check("sql: --ordered distinguishes order", json.loads(run(sq + ["compare", schema, ordq, ordr, "--ordered"]).stdout)["verdict"] == "WA"
+              and json.loads(run(sq + ["compare", schema, ordq, ordr]).stdout)["verdict"] == "AC")
+        nc = [PY, sk("prep-cn/scripts/netcalc.py")]
+        s = json.loads(run(nc + ["subnet", "192.168.10.77/26"]).stdout)
+        check("cn: subnet math", s["network"] == "192.168.10.64" and s["broadcast"] == "192.168.10.127" and s["usable_hosts"] == 62, str(s))
+        v = json.loads(run(nc + ["vlsm", "10.0.0.0/24", "10", "50", "20"]).stdout)
+        check("cn: vlsm largest first", [x["subnet"] for x in v] == ["10.0.0.0/26", "10.0.0.64/27", "10.0.0.96/28"], str(v))
+        check("cn: contains", json.loads(run(nc + ["contains", "10.0.0.0/8", "10.200.1.1"]).stdout) is True)
+        d = json.loads(run(nc + ["delay", "--size-bytes", "1500", "--bw-bps", "1e7", "--dist-m", "2e6"]).stdout)
+        check("cn: delay", abs(d["transmission_s"] - 0.0012) < 1e-12 and abs(d["propagation_s"] - 0.01) < 1e-12)
+        check("cn: bdp", json.loads(run(nc + ["window", "--bw-bps", "1e9", "--rtt-s", "0.1"]).stdout)["bdp_bytes"] == 12500000.0)
+        ac = [PY, sk("prep-arch/scripts/archcalc.py")]
+        c = json.loads(run(ac + ["cache-addr", "--addr", "0x12345678", "--size-bytes", "32768", "--block-bytes", "64", "--ways", "4"]).stdout)
+        check("arch: cache split", (c["sets"], c["offset_bits"], c["index_bits"], c["tag_bits"]) == (128, 6, 7, 19) and c["offset"] == 56, str(c))
+        check("arch: amat 2-level", json.loads(run(ac + ["amat", "--hit-s", "1", "--miss-rate", "0.05", "--penalty-s", "20", "--l2-miss-rate", "0.2", "--l2-penalty-s", "100"]).stdout)["amat_s"] == 3.0)
+        check("arch: amdahl", abs(json.loads(run(ac + ["amdahl", "--p", "0.8", "--s", "4"]).stdout)["speedup"] - 2.5) < 1e-9)
+        check("arch: cpi mix", abs(json.loads(run(ac + ["cpi", "--mix", "0.5:1,0.3:2,0.2:4"]).stdout)["cpi"] - 1.9) < 1e-9)
+        if quick:
+            return
+        cc = [PY, sk("prep-cpp/scripts/cppcheck.py")]
+        ok_ = w("ok.cpp", '#include <iostream>\n#include <utility>\nstruct A{A(){std::cout<<"c ";}A(A&&){std::cout<<"m ";}A(const A&){std::cout<<"cp ";}};\nint main(){A a;A b=std::move(a);A c=b;std::cout<<"\\n";}\n')
+        r = json.loads(run(cc + ["run", ok_]).stdout); check("cpp: clean item OK + exact output", r["verdict"] == "OK" and r["stdout"] == "c m cp \n", str(r))
+        ub = w("ub.cpp", "#include <vector>\n#include <iostream>\nint main(){std::vector<int> v{1,2,3};int&r=v[0];v.push_back(4);std::cout<<r<<'\\n';}\n")
+        r = json.loads(run(cc + ["run", ub]).stdout); check("cpp: dangling reference flagged UB", r["verdict"] == "UB" and r["ub"], str(r.get("ub")))
+        ce = w("ce.cpp", 'int main(){ int x = "s"; }\n')
+        r = run(cc + ["fails", ce]); check("cpp: compile failure detected", r.returncode == 0 and json.loads(r.stdout)["compile_error"])
+        un = w("un.cpp", '#include <iostream>\nint f(){std::cout<<"f";return 1;} int g(){std::cout<<"g";return 2;}\nint h(int a,int b){return a+b;}\nint main(){std::cout<<h(f(),g())<<"\\n";}\n')
+        r = json.loads(run(cc + ["run", un]).stdout); check("cpp: runs deterministic item without false UB", r["verdict"] in ("OK", "UNSPECIFIED"), str(r["verdict"]))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
 # ----------------------------------------------------------------------------- harness + mutation
 def t_harness():
     r = run([PY, os.path.join(SK, "prep-dsa/harness/judge.py"), "selftest"])
@@ -256,7 +312,7 @@ def t_mutation():
     r = run([PY, judge, "verify", ex]); check("mutation control: the unmutated example is accepted", r.returncode == 0, r.stdout[-300:])
 
 
-SUITES = {"routing": t_routing, "memory": t_memory, "scaffold": t_scaffold, "drill": t_drill, "harness": t_harness, "mutation": t_mutation}
+SUITES = {"routing": t_routing, "memory": t_memory, "scaffold": t_scaffold, "drill": t_drill, "helpers": lambda: t_helpers("--quick" in sys.argv), "harness": t_harness, "mutation": t_mutation}
 
 if __name__ == "__main__":
     a = sys.argv[1:]
