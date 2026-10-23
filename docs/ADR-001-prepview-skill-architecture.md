@@ -1,6 +1,6 @@
 # ADR-001: PrepView — Orchestrated, Memory-Backed Skill Set for Job Prep
 
-**Status:** Proposed
+**Status:** Accepted (decisions on language, roles, memory location resolved 2026-10-23)
 **Date:** 2026-10-23
 **Deciders:** Repo owner
 
@@ -51,12 +51,19 @@ A **three-layer design**: Orchestrator → Domain skills (nestable) → Per-doma
     registry.yaml               # probability, mental-math, brainteasers, stochastic, markets
     prob/ SKILL.md              # sub-skill, same template, own memory
     mental-math/ SKILL.md
-prep-memory/                    # USER DATA — outside skills so skills stay shareable
-  dsa/   { profile.md  log.jsonl  notes.md  schema.md }
+~/.claude/prep-memory/          # USER DATA — NOT in the repo (override with $PREP_MEMORY_DIR)
+  dsa/   { profile.md  log.jsonl  notes.md }
   quant/prob/ { ... }
 ```
 
-Skills are code (shareable, versioned). `prep-memory/` is user state (git-ignorable, private). They never mix.
+The repo holds only skills, templates and memory **schemas** (`schema.md` lives with the skill under
+`references/`). Actual memory is created lazily on first use in the user-level Claude directory, never
+under the repo and never pushed to GitHub. Skills read/write it only through that resolved path.
+
+**Durability caveat:** `~/.claude` persists on a local CLI/desktop install, but cloud sessions run in an
+ephemeral container that is reclaimed after inactivity, so memory written there is lost. For durable
+memory, run PrepView locally (or point `$PREP_MEMORY_DIR` at a persistent mount). Claude.ai's built-in
+chat memory is not writable from skills, so it is not used.
 
 ### 2. Orchestrator flow
 
@@ -67,7 +74,7 @@ Skills are code (shareable, versioned). `prep-memory/` is user state (git-ignora
   ├─ 2 ROUTE      no flag → match free text against registry `triggers`.
   │                 score ≥ threshold, margin over #2 ≥ gap → proceed, state "Routing: dsa".
   │                 else → ONE question (top 3 candidates as options). Never guess silently.
-  ├─ 3 LOAD       read ONLY: domain SKILL.md + prep-memory/<d>/profile.md (+ last 5 log lines).
+  ├─ 3 LOAD       read ONLY: domain SKILL.md + <memory-dir>/<d>/profile.md (+ last 5 log lines).
   ├─ 4 RESOLVE    difficulty: explicit -d > profile.recommended_level > domain default (2).
   │               mode: explicit > inferred from text (quiz/new/explain/review/mock) > domain default.
   ├─ 5 DELEGATE   hand domain skill {domain, mode, difficulty, n, profile-summary}.
@@ -87,7 +94,7 @@ lists its children. Depth is unbounded but each level only loads its own registr
   modes: [problem, quiz, explain, review, mock]
   default_mode: problem
   default_difficulty: 2
-  memory: prep-memory/dsa
+  memory: ${PREP_MEMORY_DIR:-~/.claude/prep-memory}/dsa
 ```
 
 ### 3. Template contract (what every domain skill contains)
@@ -110,7 +117,7 @@ Hints are tiered (nudge → pattern → skeleton → solution) and each tier use
 
 **Accuracy gates (the "deadly accurate" part).** Models must not rely on recall for correctness:
 
-- *Code-checkable* domains (DSA, quant calc): generate problem + reference solution + brute force + tests; run them with Bash; present only if reference == brute force on random tests. User code is graded against the same harness, plus complexity check.
+- *Code-checkable* domains (DSA, quant calc): generate problem + reference solution + brute force + tests; run them with Bash; present only if reference == brute force on random tests. **Language is C++** (`g++ -std=c++20 -O2`, also compiled with `-fsanitize=address,undefined` for UB/OOB catches). User code is graded against the same harness (random + edge + max-size stress tests with a time limit for complexity), and compiler/sanitizer output is mapped to flaw codes (e.g. `F-OOB`, `F-INT-OVERFLOW`, `F-UNINIT`). Harness lives in `prep-dsa/harness/` (runner script + testlib-style generators); work happens in the scratchpad, not the repo.
 - *Knowledge* domains (OS, DB, networking): every question carries an answer key, a one-line justification and a source tag; a second-pass "adversarial check" re-derives the answer independently and the item is dropped if the two disagree. No ambiguous or opinion-based MCQs.
 - *Design* domains (LLD, HLD): graded against a rubric of requirements, trade-offs, failure modes and numbers; feedback must cite the user's own words.
 - Always: the difficulty claimed must match the ladder anchors; unseen = not in `log.jsonl` (dedupe by problem/question id).
@@ -157,7 +164,7 @@ Three files per domain, split by access pattern:
 
 1. Ask ≤4 questions: flag/aliases, task types, code-checkable vs knowledge vs design, difficulty anchors.
 2. Instantiate `template/` → `.claude/skills/prep-<domain>/` with taxonomy + flaw codes seeded.
-3. Generate `prep-memory/<domain>/schema.md` with the domain's `x` block and seed empty `profile.md`/`log.jsonl`/`notes.md`.
+3. Write `.claude/skills/prep-<domain>/references/schema.md` (the domain's `x` block) in the repo; the empty `profile.md`/`log.jsonl`/`notes.md` are created in the user-level memory dir on first session, not in the repo.
 4. Append an entry to `registry.yaml` (or a parent registry for nested).
 5. Run a lint: required sections present, registry id unique, flag not colliding, schema valid JSON example.
 
@@ -221,6 +228,10 @@ Three files per domain, split by access pattern:
 
 ## Open Questions
 
-1. Primary languages for DSA (affects the test harness)?
-2. Target roles/companies (quant firms weight mental math and probability much more heavily)?
-3. Should `prep-memory/` be git-tracked, ignored, or a separate private repo?
+None blocking. Resolved:
+
+1. DSA language: **C++** (harness above).
+2. Roles: **both SWE and quant** — build order keeps `prep-quant` (prob, mental-math) alongside the SWE domains rather than deferring it; quant gets timed modes (`--timed`) since speed is scored there.
+3. Memory: **outside the repo**, user-level Claude directory (see Layout and durability caveat). Repo = skills + schemas only.
+
+Still open: whether you want a persistent location for cloud sessions (e.g. mounted volume) or are fine running locally.
