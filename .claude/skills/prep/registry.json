@@ -354,6 +354,41 @@
       ],
       "default_mode": "quiz",
       "default_difficulty": 2
+    },
+    {
+      "id": "aidebug",
+      "skill": "prep-aidebug",
+      "path": "prep-aidebug",
+      "kind": "code",
+      "flags": [
+        "--aidebug",
+        "--ai",
+        "--comprehension"
+      ],
+      "triggers": [
+        "ai debugging",
+        "debug with ai",
+        "ai assisted debugging",
+        "ai assisted coding interview",
+        "ai pair programming",
+        "code comprehension",
+        "unfamiliar codebase",
+        "fix the codebase",
+        "seeded bug",
+        "debug a codebase",
+        "prompt the ai",
+        "verify ai output",
+        "ai coding round"
+      ],
+      "modes": [
+        "debug",
+        "learn",
+        "critique",
+        "review",
+        "mock"
+      ],
+      "default_mode": "debug",
+      "default_difficulty": 2
     }
   ]
 }

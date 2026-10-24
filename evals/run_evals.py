@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""PrepView eval suite. Stdlib only. Usage: python3 evals/run_evals.py [--quick] [--only routing|memory|scaffold|drill|harness|mutation]
+"""PrepView eval suite. Stdlib only. Usage: python3 evals/run_evals.py [--quick] [--only routing|memory|scaffold|drill|aidebug|harness|mutation]
 
 routing   deterministic router cases (incl. ambiguous ones that MUST ask)
 memory    level state machine, dedupe, spaced repetition, batch/atomic append, notes cap
 scaffold  new domain from spec in a throw-away copy of the skill tree; collision + lint checks
 drill     mental-math generator/grader sanity
 helpers   sqlcheck / netcalc / archcalc ground truth (+ cppcheck unless --quick)
+aidebug   seeded-bug repo judge selftest, mutations it MUST reject, playbook ledger
 harness   C++ judge selftest (compiles; ~25s)           [skipped with --quick]
 mutation  seeded-wrong problems the verifier MUST reject [skipped with --quick]
 """
@@ -267,6 +268,35 @@ def t_helpers(quick=False):
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
+# ----------------------------------------------------------------------------- aidebug (seeded-bug repo harness + playbook)
+def t_aidebug():
+    base = os.path.join(SK, "prep-aidebug"); judge = os.path.join(base, "harness", "judge.py"); ex = os.path.join(base, "harness", "example")
+    r = run([PY, judge, "selftest"]); check("aidebug: judge selftest", r.returncode == 0, r.stdout[-300:])
+    muts = [("reference fails a test", "fixed/cart/paginate.py", "(page_no - 1) * size", "page_no * size", {"reference-fails", "meta-mismatch", "error"}),
+            ("undocumented difference in repo", "repo/cart/pricing.py", "round(price", "round(1 * price", {"meta-mismatch"}),
+            ("bug not observable", "tests_hidden/test_hidden.py", "page([1], 0, 1)", "page([1], 1, 1)", {"bug-unobservable", "unexplained-failure", "reference-fails"})]
+    for name, f, old, new, stages in muts:
+        tmp = tempfile.mkdtemp()
+        try:
+            d = os.path.join(tmp, "p"); shutil.copytree(ex, d, ignore=shutil.ignore_patterns("__pycache__"))
+            src = open(os.path.join(d, f)).read(); assert old in src, (name, old)
+            open(os.path.join(d, f), "w").write(src.replace(old, new, 1))
+            r = run([PY, judge, "verify", d]); out = json.loads(r.stdout) if r.stdout.strip() else {}
+            check(f"aidebug mutation rejected: {name}", r.returncode != 0 and out.get("stage") in stages, f"stage={out.get('stage')} detail={str(out.get('detail'))[:120]}")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+    tmp = tempfile.mkdtemp()
+    try:
+        env = {**os.environ, "PREP_MEMORY_DIR": tmp}; pb = [PY, os.path.join(base, "scripts", "playbook.py")]
+        add = lambda st, ref, origin="skill": run(pb + ["add", "Repro first", "--how", "h", "--when", "w", "--ref", ref, "--status", st, "--origin", origin], env=env)
+        add("owned", "r1"); add("taught", "r2", "user")
+        shown = run(pb + ["show"], env=env).stdout
+        check("aidebug playbook: status never moves backwards, origin sticks", "[owned, yours]" in shown, shown)
+        check("aidebug playbook: catalog excludes known techniques", "Repro first" not in run(pb + ["catalog"], env=env).stdout)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 # ----------------------------------------------------------------------------- harness + mutation
 def t_harness():
     r = run([PY, os.path.join(SK, "prep-dsa/harness/judge.py"), "selftest"])
@@ -312,7 +342,7 @@ def t_mutation():
     r = run([PY, judge, "verify", ex]); check("mutation control: the unmutated example is accepted", r.returncode == 0, r.stdout[-300:])
 
 
-SUITES = {"routing": t_routing, "memory": t_memory, "scaffold": t_scaffold, "drill": t_drill, "helpers": lambda: t_helpers("--quick" in sys.argv), "harness": t_harness, "mutation": t_mutation}
+SUITES = {"routing": t_routing, "memory": t_memory, "scaffold": t_scaffold, "drill": t_drill, "helpers": lambda: t_helpers("--quick" in sys.argv), "aidebug": t_aidebug, "harness": t_harness, "mutation": t_mutation}
 
 if __name__ == "__main__":
     a = sys.argv[1:]

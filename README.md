@@ -19,12 +19,14 @@ Design: [`docs/ADR-001-prepview-skill-architecture.md`](docs/ADR-001-prepview-sk
 /prep --arch                     # computer-architecture quiz (AMAT, caches, pipelines, MESI)
 /prep --cpp --mode predict       # "what does this print / is this UB", ground truth from g++
 /prep --cpp --mode debug         # find and fix a planted bug; fix is checked under sanitizers
+/prep --aidebug -d 3             # fix a seeded-bug Python repo in a time box with an AI helper
+/prep --aidebug --mode learn     # learn a debugging technique; your playbook records it
 /prep --dsa --mode review        # spaced-repetition of items you missed
 /prep                            # dashboard: level, weakest tag, items due
 /prep-new db --kind knowledge    # add a new domain from the template
 ```
 
-Flags: `--dsa|--algo` `--os` `--db|--dbms` `--cn|--networks|--net` `--arch` `--cpp` `--lld|--oop` `--hld|--sd` `--behavioral|--hr|--bq` `--quant` → `--prob|--quant.prob`, `--mm|--mental-math|--quant.mm`.
+Flags: `--dsa|--algo` `--os` `--db|--dbms` `--cn|--networks|--net` `--arch` `--cpp` `--lld|--oop` `--hld|--sd` `--behavioral|--hr|--bq` `--aidebug|--ai|--comprehension` `--quant` → `--prob|--quant.prob`, `--mm|--mental-math|--quant.mm`.
 (`--arch` = computer architecture: ISA, pipelines, caches, coherence, performance equations.)
 Options: `-d 1..5` (or words easy/medium/hard/expert), `-n N`, `--mode problem|quiz|explain|review|mock|design|drill|story|sql|predict|debug`, `--timed`.
 No flag → free-text routing; when unsure it asks one question, never guesses.
@@ -38,6 +40,7 @@ No flag → free-text routing; when unsure it asks one question, never guesses.
   prep-dsa/        C++ harness (verify + judge under ASan/UBSan) + example problem
   prep-os/ prep-lld/ prep-hld/ prep-behavioral/
   prep-db/ (scripts/sqlcheck.py)  prep-cn/ (scripts/netcalc.py)  prep-arch/ (scripts/archcalc.py)  prep-cpp/ (scripts/cppcheck.py)
+  prep-aidebug/    AI-assisted debugging: harness/judge.py (seeded-bug repos, hidden tests), scripts/playbook.py (technique ledger), references/techniques.md
   prep-quant/      router → prob/, mental-math/ (own registry.json, scripts/drill.py)
 evals/run_evals.py routing, memory, scaffold, drill, harness and seeded-bad-problem tests
 ```

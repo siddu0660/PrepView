@@ -1,0 +1,7 @@
+{"time_box_s": 900,
+ "bugs": [
+  {"id": "b1", "file": "cart/paginate.py", "buggy": "start = page_no * size", "fixed": "start = (page_no - 1) * size",
+   "class": "off-by-one", "technique": "Invariants and boundaries"},
+  {"id": "b2", "file": "cart/cart.py", "buggy": "def add(self, sku, unit_price, qty=1, tags=[]):\n", "fixed": "def add(self, sku, unit_price, qty=1, tags=None):\n        if tags is None:\n            tags = []\n",
+   "class": "mutable-default-arg", "technique": "Bisect the call path"}],
+ "ai_traps": []}
